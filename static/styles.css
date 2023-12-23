@@ -1,0 +1,46 @@
+body{
+    font-family: Arial, sans-serif;
+    background-color:#f0f0f0;
+    margin:20px;
+}
+h2{
+    color:#333
+}
+textarea{
+    width:300px;
+    height:100px;
+}
+form{
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow:  0 0 10px rgba(0,0,0,0.1);
+}
+
+label{
+    display:block;
+    margin-bottom: 8px;
+    color:#333;
+}
+
+input[type="text"],
+select{
+    width: 100%;
+    padding:10px;
+    margin-bottom: 16px;
+    border:1px solid #ccc;
+    box-sizing: border-box;
+
+}
+
+input[type="submit"]{
+    background-color: rgb(175, 238, 208);
+    color:#fff;
+    padding:12 px 20px;
+}
+
+@media (max-width:600px){
+    form{
+        width: 100%;
+    }
+}

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EDIT PROVIDERS</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+
+    <div class="modal-overlay" id="editModal" tabindex="-1" role="dialog" aria-labelledby="addModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addModalLabel">Add Provider</h5>
+                    <button type="button" class="close" data-dismiss="modal" onclick="closeForm()" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <!-- Add Form -->
+                    <form id="addForm" method="post" action="http://127.0.0.1:5000/admin/editprovider">
+                        <div class="form-group">
+                            <label for="addProviderName">Provider Id</label>
+                            <input type="text" class="form-control" id="addProviderName" name="provider_id" value="{{data.provider_id}}" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="addProviderName">Provider Name</label>
+                            <input type="text" class="form-control" id="addProviderName" name="provider_name"  value="{{data.provider_name}}"required>
+                        </div>
+                        <div class="form-group">
+                            <label for="addProviderURL">Provider URL</label>
+                            <input type="text" class="form-control" id="addProviderURL" name="provider_url" value="{{data.provider_url}}" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="addProviderKey">Provider Key</label>
+                            <input type="text" class="form-control" id="addProviderKey" name="provider_key" value="{{data.provider_key}}" required>
+                        </div>
+                        <input type="submit" class="btn btn-primary" name="Add Provider" value="UPDATE : {{data.provider_name}}">
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+	
+</body>
+</html>

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>Services</title>
+    <style>
+        body {
+            background-color: #f0f8ea; /* Light green background color */
+        }
+        table {
+            width: 80%;
+            margin: auto;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #4CAF50; /* Green border color */
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #4CAF50; /* Green header background color */
+            color: white;
+        }
+        .search-button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px;
+            border: none;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<a href="http://127.0.0.1:5000/admin/createserv"><button class="search-button">Add a Service</button></a>
+
+<table>
+    <thead>
+        <tr>
+            <th>ALLOCATED ID</th>
+            <th>JAP_ID</th>
+            <th>SERVICE NAME</th>
+            <th>PRICE</th>
+            <th>RATE</th>
+            <th>MIN QUANTITY</th>
+            <th>MAX QUANTITY</th>
+            <th>SERVICE TYPE</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for service in data %}
+            <tr>
+                <td>{{ service.service_id }}</td>
+                <td>{{ service.jap_id }}</td>
+                <td>{{ service.service_name }}</td>
+                <td>${{ service.service_price }}</td>
+                <td>{{ service.service_rate }}</td>
+                <td>{{ service.min }}</td>
+                <td>{{ service.max }}</td>
+                <td>{{ service.type }}</td>
+                <!-- <td>
+                    <button>Edit</button>
+                    <button>Delete</button>
+                </td> -->
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+</body>
+</html>

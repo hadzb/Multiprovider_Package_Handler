@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <title>Balance and Currency</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 50px;
+        }
+
+        h1 {
+            color: #3498db;
+        }
+
+        #balance {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        #currency {
+            font-size: 18px;
+            color: #7f8c8d;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>{{data.email}} Balance</h1>
+    <div id="balance">{{data.balance}}</div>
+
+    <h1>Currency</h1>
+    <div id="currency">{{data.currency}}</div>
+    <br/>
+    <br/>
+    <a href="http://127.0.0.1:5000/"><button class="btn btn-success mb-3">Back</button></a>
+    
+</body>
+</html>

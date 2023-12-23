@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Service</title>
+    <style>
+            
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        form {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 300px;
+        }
+
+        h1 {
+            color: #3498db;
+            text-align: center;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        input {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 16px;
+            box-sizing: border-box;
+        }
+        input[type="text"],
+        select{
+            width: 100%;
+            padding:10px;
+            margin-bottom: 16px;
+            border:1px solid #ccc;
+            box-sizing: border-box;
+
+        }
+
+        button {
+            background-color: #3498db;
+            color: #ffffff;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+    </style>
+    
+    <script>
+        // Function to disable options in the second select field based on the selection in the first select field
+        function updateOptions() {
+            var service1 = document.getElementById('service1');
+            var service2 = document.getElementById('service2');
+
+            // Enable all options in the second select field
+            for (var i = 0; i < service2.options.length; i++) {
+                service2.options[i].disabled = false;
+            }
+            // Disable the selected option in the second select field
+            if (service1.value !== '') {
+                for (var i = 0; i < service2.options.length; i++) {
+                    if (service2.options[i].value === service1.value) {
+                        service2.options[i].disabled = true;
+                        break;
+                    }
+                }
+            }
+        }
+
+        function addSelect() {
+        // Assuming Flask passes additionalOptions from the backend
+        var additionalOptions = [{value: 'extraOption1', name: 'Extra Option 1'}, {value: 'extraOption2', name: 'Extra Option 2'}];
+
+        // Create a new select element
+        var newSelect = document.createElement("select");
+        newSelect.name = "additionalSelect";
+
+        // Add options to the new select
+        additionalOptions.forEach(function(option) {
+            var newOption = document.createElement("option");
+            newOption.value = option.value;
+            newOption.text = option.name;
+            newSelect.add(newOption);
+        });
+
+        // Append the new select to the container
+        document.getElementById("dynamicSelectContainer").appendChild(newSelect);
+    }
+    </script>
+</head>
+<body>
+    <form action="http://127.0.0.1:5000/admin/createpkg" method="post" id="form">
+        <h1>Create a Package</h1>
+        <label for="jap_id">Provider</label>
+        <select id="service1" name="service1" required onchange="updateOptions()">
+            {% for option in data.providers %}
+                <option value="{{ option.provider_id }}">{{option.provider_name}}</option>
+            {% endfor %}
+        </select>
+        <br>
+
+        <label for="service_price">Select a Category:</label>
+        <select id="service2" name="service2" required >
+            {% for option in data.categories["22"] %}
+                <option value="{{option}}">{{option}}</option>
+            {% endfor %}
+        </select>
+        <br>
+        
+    
+        <label for="service_price">Choose a service:</label>
+        <select id="service2" name="service2" required >
+            {% for option in data.services %}
+                <option value="{{ option.service_id }}">{{option.name}}</option>
+            {% endfor %}
+        </select>
+        <br>
+
+        <label for="service_price">Package Price:</label>
+        <input type="text" name="service_price" required>
+
+        <label for="service_price">Package Name:</label>
+        <input type="text" name="service_name" required>
+
+        <label for="service_rate">Package Rate:</label>
+        <input type="text" name="service_rate" required>
+
+        <label for="max_limit">Max Limit:</label>
+        <input type="text" name="max" required>
+
+        <label for="min_limit">Min Limit:</label>
+        <input type="text" name="min" required>
+
+        <button type="submit">Create Package</button>
+        
+    </form>
+</body>
+
+</html>

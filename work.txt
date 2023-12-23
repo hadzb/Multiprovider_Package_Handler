@@ -1,0 +1,31 @@
+1.User User Module:
+    Authentication
+    Order Management
+    API Key Generation & Management
+
+2. Admn Module
+    Order Management
+    Service Listing
+    Multi-provider package Integration
+    Drip Feed Creation
+
+3. API Module.
+    - Rate Limiting
+    -Balance Checks
+    - API Verfication & Validation
+
+4. API connector Module: Interfaces our application with the providers
+
+5. Concurrency : Scheduling and Sequential.
+
+6. Payments
+
+7. Design Module.
+    User : Login Page, SIgnUp, Dashboard, Order_page, Balance, Api Key Page, Payments Page, Order Form
+    Admn: Login Page, SIgnUp, Dashboard, API keys Page, Order Management, User Management Page, Package Management Page, Provider Management Page, Services Page, Package Creation Form
+            Provider Creation Form, Provider Update Form, Provider Balance Display Page.
+
+
+
+
+            

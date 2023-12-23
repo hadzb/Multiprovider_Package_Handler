@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Form</title>
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f5f5f5;
+        }
+
+        form {
+            text-align: center;
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        label {
+            display: block;
+            margin-top: 10px;
+            font-weight: bold;
+            color: #333333;
+        }
+
+        select,
+        input,
+        textarea {
+            width: 100%;
+            padding: 8px;
+            margin: 5px 0 20px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        textarea {
+            resize: vertical;
+            height: 100px;
+        }
+
+        button {
+            background-color: #4caf50;
+            color: #ffffff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        #response {
+            display: block;
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        #backButton {
+            background-color: #3498db;
+            color: #ffffff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 20px;
+        }
+
+        #backButton:hover {
+            background-color: #2980b9;
+        }
+
+        /* New styles for different response statuses */
+        #response.success {
+            color: #008000;
+        }
+
+        #response.failed {
+            color: #FF0000;
+        }
+    </style>
+</head>
+
+<body>
+    <form>
+        <label for="service">Service Id</label>
+        <select id="service" name="category" required>
+            {% for option in data %}
+            <option value="{{option.value}}">{{option.value}} : {{option.name}}</option>
+            {% endfor %}
+        </select>
+
+        <label for="link">Enter Link:</label>
+        <input type="text" id="link" name="link" required>
+
+        <label for="comments">Comments:</label>
+        <textarea id="comments" name="comments" placeholder="Add your comments here" class="textarea"></textarea>
+
+        <label for="quantity">Quantity:</label>
+        <input type="text" id="quantity" name="quantity">
+
+        <button type="button" onclick="submitForm(event)">Submit</button>
+    </form>
+
+    <div style="width:200px; height:100px; text-align: center;">
+        <span id="response"></span>
+        <br>
+        <button id="backButton" onclick="goBack()">Back</button>
+    </div>
+
+    <script>
+        function submitForm(event) {
+            event.preventDefault();
+
+            const textArea = document.getElementById("comments");
+            const input = textArea.value.trim();
+            let lines = "";
+            if (input == "") {
+                formData = {
+                    service: Number(document.getElementById("service").value),
+                    link: document.getElementById("link").value,
+                    quantity: document.getElementById("quantity").value,
+                    action: "add"
+                };
+
+                fetch("/order", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify(formData)
+                    })
+                    .then((response => response.json()))
+                    .then(data => {
+                        console.log(data.message);
+                        console.log(data.status);
+                        handleResponse(data.status, data.message);
+                    })
+                    .catch(error => {
+                        error = error.error;
+                        handleResponse("failed", error);
+                    });
+
+                return;
+            }
+            if (input != "") {
+                lines = input.split("\n");
+            }
+            comments = lines.join("\n");
+
+            formData = {
+                service: Number(document.getElementById("service").value),
+                link: document.getElementById("link").value,
+                comments: comments + "\n",
+                action: "add"
+            };
+
+            fetch("/order", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(formData)
+                })
+                .then((response => response.json()))
+                .then(data => {
+                    console.log(data.status);
+                    console.log(data.message);
+                    handleResponse(data.status, data.message);
+                })
+                .catch(error => {
+                    error = error.error;
+                    handleResponse("failed", error);
+                });
+        }
+
+        function handleResponse(status, message) {
+            const responseElement = document.getElementById("response");
+            responseElement.innerText = message;
+            responseElement.className = status; // Set the class based on status
+        }
+
+        function goBack() {
+            window.history.back();
+        }
+    </script>
+</body>
+
+</html>

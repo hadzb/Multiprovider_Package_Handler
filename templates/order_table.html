@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <title>Services</title>
+    <style>
+        body {
+            background-color: #f0f8ea; /* Light green background color */
+        }
+        table {
+            width: 80%;
+            margin: auto;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #4CAF50; /* Green border color */
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #4CAF50; /* Green header background color */
+            color: white;
+        }
+        .search-button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px;
+            border: none;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <a href="http://127.0.0.1:5000/admin/providers"><button class="btn btn-success mb-3" style="width: 100px;">Back</button></a>
+
+<table>
+    <thead>
+        <tr>
+            order_id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER,
+            package_id INTEGER,
+            order_price REAL,
+            order_amount INTEGER,
+            order_description TEXT,
+            order_status TEXT
+            <th>CANCEL</th>
+            <th>CATEGORY</th>
+            <th>DRIPFEED</th>
+            <th>MAX</th>
+            <th>MIN</th>
+            <th>NAME</th>
+            <th>REFILL</th>
+            <th>SERVICE</th>
+            <th>TYPE</th>
+            <th>RATE</th>
+            <th>INTERVAL</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for service in data %}
+            <tr>
+                <td>{{ service.cancel }}</td>
+                <td>{{ service.category }}</td>
+                <td>{{ service.dripfeed }}</td>
+                <td>${{ service.max }}</td>
+                <td>{{ service.min }}</td>
+                <td>{{ service.name }}</td>
+                <td>{{ service.refill }}</td>
+                <td>{{ service.service }}</td>
+                <td>{{ service.type }}</td>
+                <td>{{ service.rate }}</td>
+                <td>{{ service.interval }}</td>
+
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+
+</body>
+</html>
+	

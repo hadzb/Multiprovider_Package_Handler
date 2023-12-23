@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Provider Management</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body{
+            width: 100%;
+        }
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent overlay */
+            justify-content: center;
+            align-items: center;
+            z-index: 1;
+        }
+
+        /* Styling for the modal content */
+        .modal-content {
+            background-color: white;
+            padding: 20px;
+            border: 1px solid #ccc;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5" style="width:100%;">
+        <!-- Button to Open Add Provider Modal -->
+        <button class="btn btn-success mb-3" data-toggle="modal" onclick="openForm()">Add Provider</button>
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Package ID</th>
+                    <th>Package Name</th>
+                    <th>Package URL</th>
+                    <th>Package Key</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Loop through providers and display rows -->
+                {% for provider in data %}
+                    <tr>
+                        <td>{{ provider.package_id }}</td>
+                        <td>{{ provider.package_name }}</td>
+                        <td>{{ provider.package_url }}</td>
+                        <td>{{ provider.package_key }}</td>
+                        <td>
+                            <a href="http://127.0.0.1:5000/admin/editprovider/{{provider.provider_id}}"><button class="btn btn-primary btn-sm">Edit</button></a>
+                            <a href="http://127.0.0.1:5000/admin/deleteprovider/{{provider.provider_id}}"><button class="btn btn-danger btn-sm">Delete</button></a>
+                            <a href="http://127.0.0.1:5000/admin/balance/{{provider.provider_id}}"><button class="btn btn-info btn-sm" >Balance</button></a>
+                            <a href="http://127.0.0.1:5000/admin/services/{{provider.provider_id}}"><button class="btn btn-success btn-sm">Services</button></a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Modal for Edit and Add Forms -->
+    <div class="modal-overlay" id="addModal" tabindex="-1" role="dialog" aria-labelledby="addModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addModalLabel">Add Package</h5>
+                    <button type="button" class="close" data-dismiss="modal" onclick="closeForm()" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <!-- Add Form -->
+                    <form id="addForm" method="POST" action="http://127.0.0.1:5000/admin/package">
+                        <div class="form-group">
+                            <label for="addProviderName">Package Name</label>
+                            <input type="text" class="form-control" id="addProviderName" name="provider_name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="addProviderURL">Package URL</label>
+                            <input type="text" class="form-control" id="addProviderURL" name="provider_url" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="addProviderKey">Package Key</label>
+                            <input type="text" class="form-control" id="addProviderKey" name="provider_key" required>
+                        </div>
+                        <input type="submit" class="btn btn-primary" name="Add Provider">
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="editModal" tabindex="-1" role="dialog" aria-labelledby="addModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addModalLabel">Add Package</h5>
+                    <button type="button" class="close" data-dismiss="modal" onclick="closeForm()" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <!-- Add Form -->
+                    <form id="addForm">
+                        <div class="form-group">
+                            <label for="addProviderName">Package Id</label>
+                            <input type="text" class="form-control" id="addProviderName" name="provider_name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="addProviderName">Package Name</label>
+                            <input type="text" class="form-control" id="addProviderName" name="provider_name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="addProviderURL">Package URL</label>
+                            <input type="text" class="form-control" id="addProviderURL" name="provider_url" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="addProviderKey">Package Key</label>
+                            <input type="text" class="form-control" id="addProviderKey" name="provider_key" required>
+                        </div>
+                        <button type="button" class="btn btn-primary" onclick="submitAddForm()">Add Provider</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ... (remaining HTML code) ... -->
+
+    <script>
+
+        // Function to handle the form submission for editing or adding a provider
+        function submitEditAddForm() {
+
+        }
+
+        function deleteProvider(providerId) {
+            // ... (previous deleteProvider code) ...
+        }
+
+        function getBalance(providerId) {
+            // ... (previous getBalance code) ...
+        }
+
+        function getServices(providerId) {
+            // ... (previous getServices code) ...
+        }
+
+        function editProvider(providerId) {
+            openForm()
+        }
+    
+        function openForm(){
+            document.getElementById("addModal").style.display="block"
+        }
+    
+        function closeForm(){
+            document.getElementById("addModal").style.display="none"
+        }
+            
+        function submitAddForm() {
+            closeForm();
+        }
+    
+    </script>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.9/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <!-- Your custom scripts -->
+
+</body>
+</html>
+

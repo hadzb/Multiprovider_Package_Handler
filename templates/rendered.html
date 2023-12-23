@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Form</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        form {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        select {
+            width: 200px;
+            padding: 5px;
+            margin-bottom: 10px;
+        }
+
+        button {
+            padding: 8px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <form>
+        <label for="provider">Select Provider:</label>
+        <select id="provider" name="provider">
+            {% for provider in data.providers %}
+                <option value="{{ provider.provider_id }}">{{ provider.provider_name }}</option>
+            {% endfor %}
+        </select>
+
+        <label for="service">Select Service:</label>
+        <select id="service" name="service"></select>
+
+        <label for="category">Select Category:</label>
+        <select id="category" name="category"></select>
+
+        <button id="cloneButton" type="button">Clone Form</button>
+    </form>
+
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Function to update services based on the selected provider
+            function updateServices(providerId) {
+                $.get(`http://127.0.0.1:5000/admin/getserv/${providerId}`, function(data) {
+                    // Clear and populate the service dropdown
+                    var serviceDropdown = $('#service');
+                    serviceDropdown.empty();
+                    $.each(data, function(index, service) {
+                        serviceDropdown.append($('<option>').text(service["name"]).attr('value', service["service_id"]));
+                    });
+                });
+            }
+
+            // Function to update categories based on the selected provider
+            function updateCategories(providerId) {
+                $.get(`http://127.0.0.1:5000/admin/getcat/${providerId}`, function(data) {
+                    // Clear and populate the category dropdown
+                    var categoryDropdown = $('#category');
+                    categoryDropdown.empty();
+                    $.each(data, function(index, category) {
+                        categoryDropdown.append($('<option>').text(category).attr('value', category));
+                    });
+                });
+            }
+
+            // Event listener for provider selection changes
+            $('#provider').on('change', function() {
+                var selectedProviderId = $(this).val();
+                updateServices(selectedProviderId);
+                updateCategories(selectedProviderId);
+            });
+
+            // Event listener for the clone button
+            $('#cloneButton').on('click', function() {
+                // Clone the form and append it below the original service dropdown
+                var clonedForm = $('form').clone();
+                $('#service').after(clonedForm);
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CREATE A PACKAGE</title>
+
+    <style>
+        body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+}
+
+form {
+    max-width: 1200px;
+    margin: 50px auto;
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+select {
+    width: 150px;
+    padding: 8px;
+    margin: 5px;
+}
+input{
+    width: 150px;
+    padding: 8px;
+    margin: 5px;
+}
+
+button {
+    display: block;
+    margin-top: 10px;
+    padding: 10px;
+    background-color: #4caf50;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+    </style>
+</head>
+<body>
+    <div id="parent">
+    <form action="http://127.0.0.1:5000/admin/createpkg" method="post" id="form">
+        <label for="service_price">Package Price:</label>
+        <input type="text" name="price" required>
+
+        <label for="service_price">Package Name:</label>
+        <input type="text" name="name" required>
+
+    <div id="dropdownContainer">
+        <div style="border-top: 2px solid #333; margin: 20px 0;width: fit-content;"></div>
+
+        <label for="service_rate">Service Rate:</label>
+        <input type="text" name="rate" required>
+
+        <label for="max_limit">Service Quantity:</label>
+        <input type="text" name="quantity" required>
+
+        <br/>
+        <label for="provider">Provider:</label>
+            <select id="provider" name="providers">
+                {% for provider in data.providers %}
+                {% set providerid=provider.provider_id%}
+                <option value="{{ provider.provider_id }}">{{ provider.provider_name }} : {{provider.provider_id}}</option>
+            {% endfor %}
+            </select>
+            
+            <label for="provider">Category:</label>
+            <select id ="category" name="categories">
+                {% for option in data.categories[providerid] %}
+                <option value="{{option}}">{{option}}</option>
+            {% endfor %}
+            </select>
+            
+            <label for="provider">Service:</label>
+            <select id="service" name="services">
+                {% for option in data.services[providerid] %}
+                <option value="{{ option.service_id }}">{{option.name}} : {{option.service_id}}</option>
+            {% endfor %}
+            </select>
+    </div>
+        <button type="submit">Create Package</button>
+        <button type="button" onclick="addDropdowns()">Add Service</button>
+
+    </form>
+    
+    </div>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script>
+        function addDropdowns() {
+            // Clone the first set of dropdowns
+            var clonedDropdowns = document.getElementById("dropdownContainer").cloneNode(true);
+
+            // Clear the values in the cloned dropdowns
+            clonedDropdowns.querySelectorAll('select').forEach(function (select) {
+                select.value = '';
+            });
+
+            // Append the cloned dropdowns to the form
+            document.getElementById('form').appendChild(clonedDropdowns);
+        }
+
+        $(document).ready(function() {
+            // Function to update services based on the selected provider
+            function updateServices(providerId) {
+                $.get(`http://127.0.0.1:5000/admin/getserv/${providerId}`, function(data) {
+                    // Clear and populate the service dropdown
+                    var serviceDropdown = $('#service');
+                    serviceDropdown.empty();
+                    $.each(data, function(index, service) {
+                        serviceDropdown.append($('<option>').text(`${service["name"]}: ${service["service_id"]}: ${service["service"]}`).attr('value', service["service_id"]));
+                    });
+                });
+            }
+
+            // Function to update categories based on the selected provider
+            function updateCategories(providerId) {
+                $.get(`http://127.0.0.1:5000/admin/getcat/${providerId}`, function(data) {
+                    // Clear and populate the category dropdown
+                    var categoryDropdown = $('#category');
+                    categoryDropdown.empty();
+                    $.each(data, function(index, category) {
+                        categoryDropdown.append($('<option>').text(category).attr('value', category));
+                    });
+                });
+            }
+
+            // Event listener for provider selection changes
+            $('#provider').on('change', function() {
+                var selectedProviderId = $(this).val();
+                updateServices(selectedProviderId);
+                updateCategories(selectedProviderId);
+            });
+
+            // Event listener for the clone button
+            $('#cloneButton').on('click', function() {
+                // Clone the form and append it below the original service dropdown
+                var clonedForm = $('form').clone();
+                $('#service').after(clonedForm);
+            });
+        });
+    </script>
+
+</body>
+</html>
+

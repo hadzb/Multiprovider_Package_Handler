@@ -320,7 +320,7 @@ if __name__=="__main__":
     a=Scheduler()
     delivery=DeliveryScheduler()
 
-    # a.run()
+    a.run()
     delivery.run()
 
     app.run(debug=True)

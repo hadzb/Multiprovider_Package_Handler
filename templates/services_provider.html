@@ -5,11 +5,8 @@
     <meta charset="utf-8">
     <title>Services</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link href="../static/flatpickr.min.css" rel="stylesheet">
     <link href="../static/flatpickr.min.css" rel="stylesheet">
-    
-
     <link href="../static/style.css" rel="stylesheet">
     <script>
         if (localStorage.getItem('dark-mode') === 'false' || !('dark-mode' in localStorage)) {
@@ -664,78 +661,6 @@
                         </div>
                     </div>
 
-
-
-                    <script>
-
-                                            // Function to handle the form submission for editing or adding a provider
-                function submitEditAddForm() {
-
-                }
-
-                function deleteProvider(providerId) {
-                    // ... (previous deleteProvider code) ...
-                }
-
-                function getBalance(providerId) {
-                    // ... (previous getBalance code) ...
-                }
-
-                function getServices(providerId) {
-                    // ... (previous getServices code) ...
-                }
-
-                function editProvider(providerId) {
-                    openForm()
-                }
-
-                function openForm(){
-                    document.getElementById("addModal").style.display="block"
-                }
-
-                function closeForm(){
-                    document.getElementById("addModal").style.display="none"
-                }
-                    
-                function submitAddForm() {
-                    closeForm();
-                }
-
-                        function goBack(){
-                            window.history.back()
-                        }
-                        // A basic demo function to handle "select all" functionality
-                        document.addEventListener('alpine:init', () => {
-                            Alpine.data('handleSelect', () => ({
-                                selectall: false,
-                                selectAction() {
-                                    countEl = document.querySelector('.table-items-action');
-                                    if (!countEl) return;
-                                    checkboxes = document.querySelectorAll('input.table-item:checked');
-                                    document.querySelector('.table-items-count').innerHTML = checkboxes.length;
-                                    if (checkboxes.length > 0) {
-                                        countEl.classList.remove('hidden');
-                                    } else {
-                                        countEl.classList.add('hidden');
-                                    }
-                                },
-                                toggleAll() {
-                                    this.selectall = !this.selectall;
-                                    checkboxes = document.querySelectorAll('input.table-item');
-                                    [...checkboxes].map((el) => {
-                                        el.checked = this.selectall;
-                                    });
-                                    this.selectAction();
-                                },
-                                uncheckParent() {
-                                    this.selectall = false;
-                                    document.getElementById('parent-checkbox').checked = false;
-                                    this.selectAction();
-                                }
-                            }))
-                        })
-                    </script>
-                    
                     <!-- Pagination -->
                     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
                         <nav class="mb-4 sm:mb-0 sm:order-1" role="navigation" aria-label="Navigation">
@@ -759,9 +684,8 @@
         </div>
 
     </div>
-
-    <script src="../static/alpinejs.min.js" defer></script>
-    <script src="../static/main.js"></script>
+    <script src="{{ url_for('static', filename='alpinejs.min.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='main.js') }}"></script>
 
 </body>
 

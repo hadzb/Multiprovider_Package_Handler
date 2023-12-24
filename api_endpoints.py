@@ -34,7 +34,7 @@ def add_order():
             
             providers=package[4].split("|")
             link=post_data.get("link","")
-            comments=post_data.get("comments","\n")
+            comments=post_data.get("comments",None)
             quantity=post_data.get("quantity",10)
             rate=""
             interval=""
@@ -42,12 +42,16 @@ def add_order():
             for task in providers:
                 package_id=task.split(":")[0]
                 service_id=task.split(":")[1]
+                prov_quantity=task.split(":")[2]
                 order_status="initiated"
-                user_id="api_order"
-
-                return (order_table.add_order(user_id,package_id,service_id,link,comments,quantity,rate,interval,order_status))
+                user_id=post_data.get("user_id")
+                if int(prov_quantity)<int(quantity):
+                    quantity=prov_quantity
+                print(user_id,package_id,service_id,link,comments,quantity,rate,interval,order_status)
+                order_table.add_order(user_id,package_id,service_id,link,comments,quantity,rate,interval,order_status)
+            return {"status":"sucesss","message":"Order was placed, check dashboard for progress"}
         else:
-            return {"error":"Your API Key is invalid or expired"}
+            return {"status":"failed","message":"Your account balance is insufficient"}
         
 
 def validate_key(user_id,api_key):

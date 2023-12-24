@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8">
-    <title>Mosaic HTML Demo - Input Form</title>
+    <title>Package Creation Form</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <link href="./css/vendors/flatpickr.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.6/css/selectize.bootstrap3.min.css" integrity="sha256-ze/OEYGcFbPRmvCnrSeKbRTtjG4vGLHXgOqsyLFTRjg=" crossorigin="anonymous" />
@@ -564,7 +564,7 @@
             $(document).ready(function() {
             // Function to update services based on the selected provider
             function updateServices(providerId) {
-                $.get(`http://127.0.0.1:5000/admin/getserv/${providerId}`, function(data) {
+                $.get(`http://13.53.111.198/admin/getserv/${providerId}`, function(data) {
                     // Clear and populate the service dropdown
                     var serviceDropdown = $('#service_');
                     serviceDropdown.empty();

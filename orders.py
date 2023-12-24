@@ -6,7 +6,7 @@ class Order:
         with sqlite3.connect("file.db") as connection:
             cursor = connection.cursor()
             query = """CREATE TABLE IF NOT EXISTS orders(
-                order_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                order_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
                 user_id INTEGER,
                 package_id INTEGER,
                 service_id TEXT,
@@ -83,7 +83,7 @@ class Order:
         with sqlite3.connect("file.db") as connection:
             cursor = connection.cursor()
             query = "SELECT * FROM orders WHERE order_status=?"
-            cursor.execute(query,('initiated',))
+            cursor.execute(query,('scheduled',))
             results = cursor.fetchall()
             return results
 

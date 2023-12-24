@@ -49,7 +49,7 @@ def create_service():
             except Exception as e:
                 print(e)
 
-        return redirect("http://127.0.0.1:5000/admin/serv")
+        return redirect("http://13.53.111.198/admin/serv")
     else:
         return render_template("create_service.html")
 
@@ -128,7 +128,7 @@ def create_package():
             
             all_data.append(parsed_data)
     
-        return render_template("packages.html",data=all_data)
+        return render_template("_providers.html",data=all_data)
 
 @admn_blueprint.route("/orders",methods=["GET","POST"])
 def get_orders():
@@ -207,7 +207,7 @@ def delete_package(entry_id=""):
     if request.method=="GET":
         a=Package()
         a.delete_package(entry_id)
-        return redirect("http://127.0.0.1:5000/admin/packages")
+        return redirect("http://13.53.111.198/admin/packages")
 
 
 @admn_blueprint.route("/editpackage",methods=["POST"])
@@ -264,6 +264,8 @@ def get_providers():
                 prov["provider_url"]=provider[2]
                 prov["provider_key"]=provider[3]
                 collection.append(prov)
+
+        
             return render_template("providers.html",data=collection)
         else:
             return {"error":"could not parse the response"}
@@ -282,7 +284,7 @@ def edit_provider(entry_id=""):
 
         else:
             print("Element does not exist in the database.")
-            return redirect("http://127.0.0.1:5000/admin/providers")
+            return redirect("http://13.53.111.198/admin/providers")
 
 @admn_blueprint.route("/editprovider",methods=["POST"])
 def edt_provider():
@@ -313,7 +315,7 @@ def edt_provider():
 def delete_provider(entry_id=""):
     if request.method=="GET":
         database.delete_provider(entry_id)
-        return redirect("http://127.0.0.1:5000/admin/providers")
+        return redirect("http://13.53.111.198/admin/providers")
 
 @admn_blueprint.route("/balance/<int:entry_id>",methods=["GET"])
 def get_balance(entry_id):
@@ -330,7 +332,6 @@ def get_balance(entry_id):
 
 @admn_blueprint.route("/services/<int:entry_id>",methods=["GET"])
 def get_all_services(entry_id):
-    
     a=Service(entry_id)
     a.initialize_services()
     serv=a.get_all_services()

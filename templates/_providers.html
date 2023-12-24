@@ -526,11 +526,14 @@
                             </div>
 
                             <!-- Add order button -->
-                            <a href="http://127.0.0.1:5000/admin/createpkg"><button class="btn bg-indigo-500 hover:bg-indigo-600 text-white">
+                            <a href="http://13.53.111.198/admin/createpkg"><button class="btn bg-indigo-500 hover:bg-indigo-600 text-white">
                                 <span class="hidden xs:block ml-2">Add Package</span>
                             </button></a>
-                            <button class="btn bg-indigo-500 hover:bg-indigo-600 text-white" onclick="goBack()">
+                            <a href="http://13.53.111.198/admin/"><button class="btn bg-indigo-500 hover:bg-indigo-600 text-white">
                                 <span class="hidden xs:block ml-2">Home</span>
+                            </button></a>
+                            <button class="btn bg-indigo-500 hover:bg-indigo-600 text-white" onclick="goBack()">
+                                <span class="hidden xs:block ml-2">Back</span>
                             </button>                        
                             
                         </div>
@@ -610,7 +613,7 @@
                                             <td class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap">
                                                 <div class="m-1.5">
                                                     <!-- Start -->
-                                                    <a href="http://127.0.0.1:5000/admin/deletepackage/{{order.package_id}}"><button class="btn dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 text-rose-500">
+                                                    <a href="http://13.53.111.198/admin/deletepackage/{{order.package_id}}"><button class="btn dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 text-rose-500">
                                                         <svg class="w-4 h-4 fill-current shrink-0" viewBox="0 0 16 16">
                                                             <path d="M5 7h2v6H5V7zm4 0h2v6H9V7zm3-6v2h4v2h-1v10c0 .6-.4 1-1 1H2c-.6 0-1-.4-1-1V5H0V3h4V1c0-.6.4-1 1-1h6c.6 0 1 .4 1 1zM6 2v1h4V2H6zm7 3H3v9h10V5z" />
                                                         </svg>

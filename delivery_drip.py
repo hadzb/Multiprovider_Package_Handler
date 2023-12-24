@@ -40,8 +40,6 @@ class DeliveryScheduler:
     def schedule_and_execute_orders(self):
         print("The Delivery Module is now running and checking for changes.")
 
-        
-
         while True:
             # Run the scheduled tasks
             schedule.run_pending()

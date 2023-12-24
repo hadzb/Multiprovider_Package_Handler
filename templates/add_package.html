@@ -49,7 +49,7 @@ button:hover {
 </head>
 <body>
     <div id="parent">
-    <form action="http://127.0.0.1:5000/admin/createpkg" method="post" id="form">
+    <form action="http://13.53.111.198/admin/createpkg" method="post" id="form">
         <label for="service_price">Package Price:</label>
         <input type="text" name="price" required>
 
@@ -112,7 +112,7 @@ button:hover {
         $(document).ready(function() {
             // Function to update services based on the selected provider
             function updateServices(providerId) {
-                $.get(`http://127.0.0.1:5000/admin/getserv/${providerId}`, function(data) {
+                $.get(`http://13.53.111.198/admin/getserv/${providerId}`, function(data) {
                     // Clear and populate the service dropdown
                     var serviceDropdown = $('#service');
                     serviceDropdown.empty();
@@ -124,7 +124,7 @@ button:hover {
 
             // Function to update categories based on the selected provider
             function updateCategories(providerId) {
-                $.get(`http://127.0.0.1:5000/admin/getcat/${providerId}`, function(data) {
+                $.get(`http://13.53.111.198/admin/getcat/${providerId}`, function(data) {
                     // Clear and populate the category dropdown
                     var categoryDropdown = $('#category');
                     categoryDropdown.empty();

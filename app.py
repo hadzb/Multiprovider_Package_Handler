@@ -44,6 +44,29 @@ class User(UserMixin,db.Model):
 
 with app.app_context():
     db.create_all()
+    with sqlite3.connect("file.db") as connection:
+        cursor=connection.cursor()
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS api_keys(
+                user_id TEXT PRIMARY KEY,
+                api_key TEXT,
+                expiration_date TEXT
+            )
+        """)
+        connection.commit()
+    
+    
+    a = Scheduler()
+    delivery = DeliveryScheduler()
+
+#Running the dlivery and time based drip.
+    a.run()
+    delivery.run()
+    delivery_thread = None
+
+
+
+    
 
 def generate_key():
     user_id=current_user.email
@@ -204,15 +227,13 @@ def add_order():
             for task in providers:
                 package_id=task.split(":")[0]
                 service_id=task.split(":")[1]
-                prov_quantity=task.split(":")[2]
                 order_status="initiated"
                 user_id=current_user.email
-                if int(prov_quantity)<int(quantity):
-                    quantity=prov_quantity
                 print(order_table.add_order(user_id,package_id,service_id,link,comments,quantity,rate,interval,order_status))
             return {"status":"sucesss","message":"Order was placed, check dashboard for progress"}
         else:
             return {"status":"failed","message":"Your account balance is insufficient"}
+        
         
 def validate_order(package_id,balance):
     p=Package()
@@ -317,10 +338,4 @@ def get_api_keys(user_id):
 
 
 if __name__=="__main__":
-    a=Scheduler()
-    delivery=DeliveryScheduler()
-
-    a.run()
-    delivery.run()
-
     app.run(debug=True)

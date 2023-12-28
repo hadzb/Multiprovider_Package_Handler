@@ -20,9 +20,11 @@ class Provider:
             query="INSERT INTO providers (provider_name,provider_url,provider_key) VALUES (?,?,?)"
             cursor.execute(query,(name,url,key.strip()))
 
+            provider_id=cursor.lastrowid
+
             connection.commit()
         
-            return {"status":True,"message":f"Added {name} to the list of the providers"}
+            return {"status":True,"message":f"Added {name} to the list of the providers","provider_id":provider_id}
 
     def edit_provider(self,update_data):
         with sqlite3.connect("file.db") as connection:

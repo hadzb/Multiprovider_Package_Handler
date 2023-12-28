@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.6/css/selectize.bootstrap3.min.css" integrity="sha256-ze/OEYGcFbPRmvCnrSeKbRTtjG4vGLHXgOqsyLFTRjg=" crossorigin="anonymous" />
     <title>CREATE A PACKAGE</title>
 
     <style>
@@ -74,13 +75,7 @@ button:hover {
             {% endfor %}
             </select>
             
-            <label for="provider">Category:</label>
-            <select id ="category" name="categories">
-                {% for option in data.categories[providerid] %}
-                <option value="{{option}}">{{option}}</option>
-            {% endfor %}
-            </select>
-            
+
             <label for="provider">Service:</label>
             <select id="service" name="services">
                 {% for option in data.services[providerid] %}
@@ -148,6 +143,12 @@ button:hover {
                 $('#service').after(clonedForm);
             });
         });
+
+//         $(document).ready(function () {
+//        $('services').selectize({
+//            sortField: 'text'
+//        });
+//    });
     </script>
 
 </body>

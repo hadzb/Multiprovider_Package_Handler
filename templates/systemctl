@@ -411,7 +411,7 @@
                                 <div>
                                     <div>
                                         <label class="block text-sm font-medium mb-1" for="supporting-text">Package Name</label>
-                                        <input id="packageName" class="form-input w-full" name="name" type="text" required/>
+                                        <input id="packageName" class="form-input w-full" name="name" type="text" />
                                     </div>
                                     <!-- <div class="text-xs mt-1">Supporting text goes here!</div> -->
                                 </div>
@@ -423,7 +423,7 @@
                                 <div>
                                     <div>
                                         <label class="block text-sm font-medium mb-1" for="supporting-text">Package Price</label>
-                                        <input id="packageName" class="form-input w-full" name="price" type="text" required />
+                                        <input id="packageName" class="form-input w-full" name="price" type="text" />
                                     </div>
                                     <!-- <div class="text-xs mt-1">Supporting text goes here!</div> -->
                                 </div>
@@ -439,7 +439,7 @@
                                 <div>
                                     <div>
                                         <label class="block text-sm font-medium mb-1" for="supporting-text">Service Rate</label>
-                                        <input id="packageName" class="form-input w-full" name="rate" type="text" required/>
+                                        <input id="packageName" class="form-input w-full" name="rate" type="text" />
                                     </div>
                                     <!-- <div class="text-xs mt-1">Package Rate</div> -->
                                 </div>
@@ -451,7 +451,7 @@
                                 <div>
                                     <div>
                                         <label class="block text-sm font-medium mb-1" for="supporting-text">Service Interval</label>
-                                        <input id="packageName" class="form-input w-full" name="interval" type="text" required/>
+                                        <input id="packageName" class="form-input w-full" name="interval" type="text" />
                                     </div>
                                     <!-- <div class="text-xs mt-1">Package Interval</div> -->
                                 </div>
@@ -463,7 +463,7 @@
                                 <div>
                                     <div>
                                         <label class="block text-sm font-medium mb-1" for="supporting-text">Service Quantity</label>
-                                        <input id="packageName" class="form-input w-full" name ="quantity" type="text" required/>
+                                        <input id="packageName" class="form-input w-full" name ="quantity" type="text" />
                                     </div>
                                     <!-- <div class="text-xs mt-1">Package Interval</div> -->
                                 </div>
@@ -475,7 +475,7 @@
                         <div class="grid gap-5 md:grid-cols-3">
                             <div>
                                 <label class="block text-sm font-medium mb-1" for="country">Select Provider</label>
-                                <select id="provider" name="providers" placeholder="Select Package" required>
+                                <select id="provider" name="providers" placeholder="Select Package">
                                     <option value=" ">Choose Provider</option>
                                     {% for provider in data.providers %}
                                     {% set providerid=provider.provider_id%}
@@ -486,7 +486,7 @@
 
                             <div>
                                 <label class="block text-sm font-medium mb-1" for="country">Select Category</label>
-                                <select id="categories" name="categories" placeholder="Select Package" required >
+                                <select id="categories" name="providers" placeholder="Select Package">
                                     <option value=" ">Choose Category</option>
                                     <option value=" ">Category</option>
                                   </select>
@@ -499,7 +499,7 @@
                             </div>
                             <div>
                                 <label class="block text-sm font-medium mb-1" for="country">Select Service</label>
-                                <select id="services" name="services" required>
+                                <select id="services" name="services">
                                     <option value="" onclick="toggleDropdown()">Service Id</option>
                                 </select>
                             </div>
@@ -562,8 +562,6 @@
             }
             }
         }
-
-
         
         function goBack(){
 
@@ -571,7 +569,37 @@
 
         }
 
+        function addDropdowns() {
+            //prevent the default behaviour
+            event.preventDefault()
 
+            // Clone the first set of dropdowns
+            var clonedDropdowns = document.getElementById("dropdownContainer").cloneNode(true);
+
+            // Clear the values in the cloned dropdowns
+            clonedDropdowns.querySelectorAll('select').forEach(function (select) {
+                select.value = '';
+            });
+
+            // Add the event listener to the cloned #provider element
+            var clonedProviderSelect = clonedDropdowns.querySelector('#provider');
+            clonedProviderSelect.addEventListener('change', function() {
+                selectedProviderId = this.value;
+                console.log("provider updated");
+                updateCategory(selectedProviderId);
+            });
+
+            // Add the event listener to the cloned #categories element
+            var clonedCategoriesSelect = clonedDropdowns.querySelector('#categories');
+            clonedCategoriesSelect.addEventListener('change', function() {
+                selectedCategory = this.value;
+                updateServices(selectedCategory, selectedProviderId);
+            });
+
+
+            // Append the cloned dropdowns to the form
+            document.getElementById('form').appendChild(clonedDropdowns);
+        }
 
         function removeDropdowns() {
             // Get all the cloned dropdown containers
@@ -586,7 +614,7 @@
                 lastClonedDropdown.parentNode.removeChild(lastClonedDropdown);
             }}
         
-
+        $(document).ready(function() {
             // Function to update services based on the selected provider
             function updateCategory(providerId) {
                 $.get(`http://13.53.111.198/admin/getcat/${providerId}`, function(data) {
@@ -634,102 +662,7 @@
                 var clonedForm = $('form').clone();
                 $('#services').after(clonedForm);
             });
-
-                        // Function to update services based on the selected provider
-            function updateCategoryn(providerId,selected) {
-                number=selected.split("_")[1]
-                $.get(`http://13.53.111.198/admin/getcat/${providerId}`, function(data) {
-                    // Clear and populate the service dropdown
-                    var serviceDropdown = $(`#category_${number}`);
-                    serviceDropdown.empty();
-                    $.each(data, function(index, service) {
-                        serviceDropdown.append($('<option>').text(`${service}`).attr('value', service));
-                    });
-                });
-            }
-
-            function updateServicesn(category,providerId,selected) {
-                number=selected.split("_")[1]
-                $.get(`http://13.53.111.198/admin/getserv/${category}/${providerId}`, function(data) {
-                    // Clear and populate the category dropdown
-                    var categoryDropdown = $(`#service_${number}`);
-                    categoryDropdown.empty();
-                    $.each(data, function(index, service) {
-                        categoryDropdown.append($('<option>').text(`${service["service"]}`).attr('value', service["service"]));
-                    });
-                });
-            }
-
-            function filter(id) {
-                number=id.split("_")[1]
-                var input, filter, options, option, i, txtValue;
-                input = document.getElementById(`search_${number}`);
-                filter = input.value.toUpperCase();
-                options = document.getElementById(`service_${number}`);
-                options = options.getElementsByTagName('option');
-
-                for (i = 0; i < options.length; i++) {
-                    option = options[i];
-                    txtValue = option.textContent || option.innerText;
-                
-                if (txtValue.toUpperCase().indexOf(filter) > -1) {
-                    option.style.display = '';
-                } else {
-                    option.style.display = 'none';
-                }
-                }
-        }
-            let cloneCount=0
-            
-            function addDropdowns(event) {
-
-                let selectedProviderId;
-
-                // prevent the default behavior
-                event.preventDefault();
-
-                // Clone the first set of dropdowns
-                var clonedDropdowns = document.getElementById("dropdownContainer").cloneNode(true);
-                // Clear the values in the cloned dropdowns
-                clonedDropdowns.querySelectorAll('select').forEach(function (select) {
-                    select.value = '';
-                });
-                cloneCount++
-
-                provider=clonedDropdowns.querySelector("#provider")
-                category=clonedDropdowns.querySelector("#categories")
-                service=clonedDropdowns.querySelector("#services")
-                search=clonedDropdowns.querySelector("#search")
-
-                provider.id=`provider_${cloneCount}`
-                category.id=`category_${cloneCount}`
-                service.id=`service_${cloneCount}`
-                search.id=`search_${cloneCount}`
-
-
-                provider.addEventListener('change', function() {
-                    selectedProviderId = this.value;
-                    console.log(`Provider updated with provider Id : ${this.value}`);
-                    updateCategoryn(selectedProviderId,this.id);
-                });
-
-                category.addEventListener("change",function(){
-                    selectedCategory=this.value
-                    console.log("A change in category detected....for cloned nodes")
-                    updateServicesn(selectedCategory,selectedProviderId,this.id)
-                })
-
-                selected=search.id
-                search.addEventListener("input",function(){
-                    filter(search.id)
-                })
-                
-
-                // Append the cloned dropdowns to the form
-                document.getElementById('form').appendChild(clonedDropdowns);
-}
-
-
+        });
 
     </script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>

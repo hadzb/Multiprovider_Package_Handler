@@ -105,7 +105,7 @@ class Service:
                 collection.append(dict)
                 
             return collection
-        
+
 
     def delete_service(self):
         with sqlite3.connect("file.db") as connection:

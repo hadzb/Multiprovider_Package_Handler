@@ -26,7 +26,7 @@ class DeliveryScheduler:
             # Set interval column to 1 for the sampled rows, and 20 for the rest
             df['interval'] = 20
             df['order_status']='scheduled'
-            df.loc[sample_rows.index, 'interval'] = 1
+            df.loc[sample_rows.index, 'interval'] = 3600
 
             # Update the "orders" table with the modified DataFrame
             cursor.execute('DROP TABLE IF EXISTS orders')

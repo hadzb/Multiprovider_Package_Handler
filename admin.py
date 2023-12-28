@@ -5,6 +5,8 @@ from provider_wrapper import Api
 from services import Service
 from packages import Package
 from orders import Order
+from urllib.parse import unquote
+from itertools import groupby
 
 database=Provider()
 admn_blueprint=Blueprint("admn_blueprint",__name__)
@@ -89,24 +91,28 @@ def create_package():
         data["providers"]=parse_package_response(all_providers)
         data["services"]=[{}]
         data["categories"]=get_categories(parse_service_response(data["providers"]))
-        return render_template("add_package.html",data=data)
+        return render_template("form_create_package.html",data=data)
     else:
 
         providers=request.form.getlist('providers')
         services=request.form.getlist('services')
         quantities=request.form.getlist('quantity')
 
+
+        print(f"providers ... {providers}")
+        print(f"services ... {services}")
+        print(f"quantities ... {quantities}")
+
+
         package_name=request.form.get("name")
         package_price=request.form.get("price")
         package_rate=request.form.get("rate")
-        package_max=request.form.get("max")
         
         package_info=[]
         for provider,service,quantity in zip(providers,services,quantities):
-            serviceDatabase=Service(provider)
-            serv_id=serviceDatabase.get_service(service)
-            actual_id=serv_id[8]
+            actual_id=service
             package_info.append(f"{provider}:{actual_id}:{quantity}")
+            print(package_info)
 
         package_info="|".join(package_info)
         print(package_info)
@@ -129,6 +135,8 @@ def create_package():
             all_data.append(parsed_data)
     
         return render_template("_providers.html",data=all_data)
+
+
 
 @admn_blueprint.route("/orders",methods=["GET","POST"])
 def get_orders():
@@ -254,6 +262,14 @@ def get_providers():
         provider_key=request.form.get("provider_key")
         response=database.add_provider(provider_name,provider_url,provider_key)
 
+        provider_id=response["provider_id"]
+        a=Service(provider_id)
+        a.initialize_services()
+        serv=a.get_all_services()
+        
+        #Print all the services.
+        print(serv)
+
         if response["status"]==True:
             providers=database.get_all_providers()
             collection=[]
@@ -363,6 +379,7 @@ def parse_service_response(providers):
 
     return all_services
 
+
 #Takes as parameter packages : A collection of package Ids, and services a collection of dictionaries
 def get_categories(services): 
     cat_data=dict()
@@ -379,12 +396,6 @@ def get_categories(services):
 
     return cat_data  
 
-@admn_blueprint.route("/getserv/<int:provider_id>")
-def get_serv(provider_id):
-    a=Service(str(provider_id))
-    services=a.get_all_services()
-    return services
-
 @admn_blueprint.route("/getcat/<int:provider_id>")
 def pass_categories(provider_id):
     all_categories=[]
@@ -396,6 +407,19 @@ def pass_categories(provider_id):
             if service_category not in all_categories:
                 all_categories.append(service_category)
     return all_categories
+
+def groupServicesByCategory(objects):
+    objects.sort(key=lambda x: x['category'])
+    grouped_objects = {key: list(group) for key, group in groupby(objects, key=lambda x: x['category'])}
+    return grouped_objects
+
+@admn_blueprint.route("/getserv/<path:category>/<int:provider>")
+def get_services_(category,provider):
+    category=unquote(category)
+    a=Service(provider)
+    all_services=a.get_all_services()
+    categories=groupServicesByCategory(all_services)
+    return categories.get(category)
 
 @admn_blueprint.route("/")
 def admnDashboard():    

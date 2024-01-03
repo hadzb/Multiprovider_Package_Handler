@@ -48,7 +48,7 @@ class Service:
         all_serv=[]
         print(services)
         for s in services:
-            n_services=(s.get("cancel"),s.get("category"),s.get("dripfeed"),s.get("max"),s.get("min"),s.get("name"),s.get("refill"),s.get("service"),s.get("type"),1,1)
+            n_services=(s.get("cancel"),s.get("category"),s.get("dripfeed"),s.get("max"),s.get("min"),s.get("name"),s.get("refill"),s.get("service"),s.get("type"),s.get("rate"),1)
             all_serv.append(n_services)
 
         self.add_service(all_serv)

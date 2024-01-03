@@ -3,11 +3,11 @@
 
 <head>
     <meta charset="utf-8">
-    <title>Packages</title>
+    <title>Orders Table</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <link href="../static/flatpickr.min.css" rel="stylesheet">
-    <link href="../static/flatpickr.min.css" rel="stylesheet">
-    <link href="../static/style.css" rel="stylesheet">
+    <link href="/static/flatpickr.min.css" rel="stylesheet">
+    <link href="/static/flatpickr.min.css" rel="stylesheet">
+    <link href="/static/style.css" rel="stylesheet">
     <script>
         if (localStorage.getItem('dark-mode') === 'false' || !('dark-mode' in localStorage)) {
             document.querySelector('html').classList.remove('dark');
@@ -398,7 +398,7 @@
 
                         <!-- Left: Title -->
                         <div class="mb-4 sm:mb-0">
-                            <h1 class="text-2xl md:text-3xl text-slate-800 dark:text-slate-100 font-bold">Packages</h1>
+                            <h1 class="text-2xl md:text-3xl text-slate-800 dark:text-slate-100 font-bold">Orders ✨</h1>
                         </div>
 
                         <!-- Right: Actions -->
@@ -516,7 +516,7 @@
 
                             <!-- Filter button -->
                             <div class="relative inline-flex">
-                                <button
+                                <button id="sort"
                                     class="btn bg-white dark:bg-slate-800 border-slate-200 hover:border-slate-300 dark:border-slate-700 dark:hover:border-slate-600 text-slate-500 hover:text-slate-600 dark:text-slate-400 dark:hover:text-slate-300">
                                     <span class="sr-only">Filter</span><wbr>
                                     <svg class="w-4 h-4 fill-current" viewBox="0 0 16 16">
@@ -526,15 +526,14 @@
                             </div>
 
                             <!-- Add order button -->
-                            <a href="http://13.53.111.198/admin/createpkg"><button class="btn bg-indigo-500 hover:bg-indigo-600 text-white">
-                                <span class="hidden xs:block ml-2">Add Package</span>
-                            </button></a>
-                            <a href="http://13.53.111.198/admin/"><button class="btn bg-indigo-500 hover:bg-indigo-600 text-white">
-                                <span class="hidden xs:block ml-2">Home</span>
-                            </button></a>
+                            
                             <button class="btn bg-indigo-500 hover:bg-indigo-600 text-white" onclick="goBack()">
-                                <span class="hidden xs:block ml-2">Back</span>
-                            </button>                        
+                                <span class="hidden xs:block ml-2">Home</span>
+                            </button>
+
+                            <button class="btn bg-indigo-500 hover:bg-indigo-600 text-white" onclick="sortTable(1)">
+                                <span class="hidden xs:block ml-2">Sort By Execution Time</span>
+                            </button>                              
                             
                         </div>
 
@@ -543,13 +542,13 @@
                     <!-- Table -->
                     <div class="bg-white dark:bg-slate-800 shadow-lg rounded-sm border border-slate-200 dark:border-slate-700 mb-8">
                         <header class="px-5 py-4">
-                            <h2 class="font-semibold text-slate-800 dark:text-slate-100">All Packages</h2>
+                            <h2 class="font-semibold text-slate-800 dark:text-slate-100">Start Execution Time : <span class="text-slate-400 dark:text-slate-500 font-medium">{{data[0].start}}</span></h2>
                         </header>
                         <div x-data="handleSelect">
 
                             <!-- Table -->
                             <div class="overflow-x-auto">
-                                <table class="table-auto w-full dark:text-slate-300 divide-y divide-slate-200 dark:divide-slate-700">
+                                <table class="table-auto w-full dark:text-slate-300 divide-y divide-slate-200 dark:divide-slate-700" id="order-table">
                                     <!-- Table header -->
                                     <thead class="text-xs uppercase text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-900/20 border-t border-slate-200 dark:border-slate-700">
                                         <tr>
@@ -561,22 +560,42 @@
                                                     </label>
                                                 </div>
                                             </th>
-                                            <th class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap">
+                                            <th class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap" onclick="sortTable(1)" >
+                                                <div class="font-semibold text-left">Order Id</div>
+                                            </th>
+                                            <th class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap" onclick="sortTable(2)">
+                                                <div class="font-semibold text-left">User Id</div>
+                                            </th>
+                                            <th class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap" onclick="sortTable(3)">
                                                 <div class="font-semibold text-left">Package Id</div>
                                             </th>
-                                            <th class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap">
-                                                <div class="font-semibold text-left">Package Name</div>
+                                            <th class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap" onclick="sortTable(4)">
+                                                <div class="font-semibold text-left">Comments</div>
                                             </th>
-                                            <th class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap">
-                                                <div class="font-semibold text-left">Package Price</div>
+                                            <th class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap" onclick="sortTable(5)">
+                                                <div class="font-semibold text-left">Link</div>
                                             </th>
-                                            <th class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap">
-                                                <div class="font-semibold text-left">Provider ID : Service ID</div>
-                                            </th>                                    
-                                            
-                                            <th class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap">
-                                                <div class="font-semibold text-left">Actions</div>
-
+                                            <th class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap" onclick="sortTable(6)">
+                                                <div class="font-semibold text-left">Order Status</div>
+                                            </th>
+                                            <th class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap" onclick="sortTable(7)">
+                                                <div class="font-semibold text-left">Service Id</div>
+                                            </th>
+                                            <th class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap" onclick="sortTable(8)">
+                                                <div class="font-semibold">Quantity</div>
+                                            </th>
+                                            <th class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap" onclick="sortTable(9)">
+                                                <div class="font-semibold text-left">Rate</div>
+                                            </th>
+                                            <th class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap" onclick="sortTable(10)">
+                                                <div class="font-semibold text-left">Interval</div>
+                                            </th>
+                                            <th class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap" onclick="sortTable(5)">
+                                                <div class="font-semibold text-left">Provider Order Id</div>
+                                            </th>
+                                            <th class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap" onclick="sortTable(11)">
+                                                <div class="font-semibold text-left">Execution Time</div>
+                                            </th>
                                         </tr>
                                     </thead>
                                     {% for order in data %} 
@@ -592,101 +611,44 @@
                                             </td>
                                             <td class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap">
                                                 <div class="flex items-center text-slate-800">
-                                                    <div class="font-medium text-sky-500">{{ order.package_id }}</div>
+                                                    <div class="font-medium text-sky-500">{{ order.order_id }}</div>
                                                 </div>
                                             </td>
                                             <td class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap">
-                                                <div>{{ order.package_name }}</div>
+                                                <div>{{ order.user_id }}</div>
                                             </td>
                                             <td class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap">
-                                                <div class="font-medium text-slate-800 dark:text-slate-100">{{ order.package_price }}</div>
+                                                <div class="font-medium text-slate-800 dark:text-slate-100">{{ order.package_id }}</div>
                                             </td>
                                             <td class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap">
-                                                <div class="text-left font-medium text-emerald-500">{{ order.package_provider }}</div>
+                                                <div class="text-left font-medium text-emerald-500">{{ order.comments }}</div>
                                             </td>
                                             <td class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap">
-                                                <div class="m-1.5">
-                                                    <!-- Start -->
-                                                    <a href="http://13.53.111.198/admin/deletepackage/{{order.package_id}}"><button class="btn dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 text-rose-500">
-                                                        <svg class="w-4 h-4 fill-current shrink-0" viewBox="0 0 16 16">
-                                                            <path d="M5 7h2v6H5V7zm4 0h2v6H9V7zm3-6v2h4v2h-1v10c0 .6-.4 1-1 1H2c-.6 0-1-.4-1-1V5H0V3h4V1c0-.6.4-1 1-1h6c.6 0 1 .4 1 1zM6 2v1h4V2H6zm7 3H3v9h10V5z" />
-                                                        </svg>
-                                                        <span class="ml-2">Delete</span>
-                                                    </button></a>
-                                                    <!-- End -->
-                                                </div>
+                                                <div class="text-left font-medium text-emerald-500">{{ order.link }}</div>
                                             </td>
                                             <td class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap">
-                                                <div class="m-1.5">
-                                                    <!-- Start -->
-                                                    <button class="btn dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 text-slate-600 dark:text-slate-300">
-                                                        <svg class="w-4 h-4 fill-current text-slate-500 dark:text-slate-400 shrink-0" viewBox="0 0 16 16">
-                                                            <path d="M11.7.3c-.4-.4-1-.4-1.4 0l-10 10c-.2.2-.3.4-.3.7v4c0 .6.4 1 1 1h4c.3 0 .5-.1.7-.3l10-10c.4-.4.4-1 0-1.4l-4-4zM4.6 14H2v-2.6l6-6L10.6 8l-6 6zM12 6.6L9.4 4 11 2.4 13.6 5 12 6.6z" />
-                                                        </svg>
-                                                        <span class="ml-2">Edit Package</span>
-                                                    </button>
-                                                    <!-- End -->
-                                                </div>
+                                                <div class="inline-flex font-medium bg-amber-100 dark:bg-amber-400/30 text-amber-600 dark:text-amber-400 rounded-full text-center px-2.5 py-0.5">{{order.order_status}}</div>
+                                            </td>
+                                            <td class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap">
+                                                <div class="text-left font-medium text-emerald-500">{{ order.service_id }}</div>
+                                            </td>
+                                            <td class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap">
+                                                <div class="text-left font-medium text-emerald-500">{{ order.quantity }}</div>
+                                            </td>
+                                            <td class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap">
+                                                <div class="text-left">{{ order.rate }}</div>
+                                            </td>
+                                            <td class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap">
+                                                <div class="text-left">{{ order.interval }}</div>
+                                            </td>
+                                            <td class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap">
+                                                <div class="text-left">{{ order.jap_order_id }}</div>
+                                            </td>
+                                            <td class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap">
+                                                <div class="text-left">{{ order.execution_time }}</div>
                                             </td>
 
-                                            <td class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap w-px">
-                                                <div class="flex items-center">
-                                                    <button class="text-slate-400 hover:text-slate-500 dark:text-slate-500 dark:hover:text-slate-400 transform" :class="{ 'rotate-180': open }" @click.prevent="open = !open" :aria-expanded="open" aria-controls="description-01">
-                                                        <span class="sr-only">Package Info</span>
-                                                        <svg class="w-8 h-8 fill-current" viewBox="0 0 32 32">
-                                                            <path d="M16 20l-5.4-5.4 1.4-1.4 4 4 4-4 1.4 1.4z" />
-                                                        </svg>
-                                                    </button>
-                                                </div>
-                                            </td>
                                         </tr>
-                                        <tr id="description-01" role="region" x-show="open" x-cloak>
-                                            <td colspan="10" class="px-2 first:pl-5 last:pr-5 py-3">
-                                            <table class="table-auto w-full dark:text-slate-300 divide-y divide-slate-200 dark:divide-slate-700">
-                                                <thead class="text-xs uppercase text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-900/20 border-t border-slate-200 dark:border-slate-700">
-
-                                                    <th class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap">
-                                                        <div class="font-semibold text-left">Provider Id</div>
-                                                    </th>
-                                                    <th class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap">
-                                                        <div class="font-semibold text-left">Service Id</div>
-                                                    </th>
-                                                    <th class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap">
-                                                        <div class="font-semibold text-left">Quantity</div>
-                                                    </th>
-                                                    <th class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap">
-                                                        <div class="font-semibold text-left">Interval</div>
-                                                    </th>
-                                                    <th class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap">
-                                                        <div class="font-semibold text-left">Frequency</div>
-                                                    </th>
-                                                </thead>
-                                                {% for config in order.package_configuration %}
-                                                <tbody class="text-sm" x-data="{ open: false }">
-                                                    <tr>
-                                                        <td class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap">
-                                                            <div class="inline-flex font-medium bg-emerald-100 dark:bg-emerald-400/30 text-emerald-600 dark:text-emerald-400 rounded-full text-center px-2.5 py-0.5">{{config.provider_id}}</div>
-                                                        </td>
-                                                        <td class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap">
-                                                            <div class="inline-flex font-medium bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 rounded-full text-center px-2.5 py-0.5">{{config.service_id}}</div>
-                                                        </td>
-                                                        <td class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap">
-                                                            <div class="inline-flex font-medium bg-amber-100 dark:bg-amber-400/30 text-amber-600 dark:text-amber-400 rounded-full text-center px-2.5 py-0.5">{{config.quantity}}</div>
-                                                        </td>
-                                                        <td class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap">
-                                                            <div class="inline-flex font-medium bg-amber-100 dark:bg-amber-400/30 text-amber-600 dark:text-amber-400 rounded-full text-center px-2.5 py-0.5">{{config.interval}}</div>
-                                                        </td>
-                                                        <td class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap">
-                                                            <div class="inline-flex font-medium bg-emerald-100 dark:bg-emerald-400/30 text-emerald-600 dark:text-emerald-400 rounded-full text-center px-2.5 py-0.5">{{config.rate}}</div>
-                                                        </td>
-                                                    </tr>
-
-                                                </tbody>
-                                                {% endfor %}
-                                            </table>
-                                        </td>
-                                        </tr>
-                                        
                                     </tbody>
                                     {% endfor %}   
                                 </table>
@@ -694,9 +656,7 @@
                             </div>
                         </div>
                     </div>
-
                     <script>
-                        //Go back to the calling window / previous activity.
 
                         function goBack(){
                             window.history.back()
@@ -749,17 +709,49 @@
                             Showing <span class="font-medium text-slate-600 dark:text-slate-300">1</span> to <span class="font-medium text-slate-600 dark:text-slate-300">10</span> of <span class="font-medium text-slate-600 dark:text-slate-300">467</span> results
                         </div>
                     </div>
+
                 </div>
             </main>
+
         </div>
+
     </div>
-    <script src="../static/alpinejs.min.js" defer></script>
-    <script src="../static/main.js"></script>
-    <script src="../static/chart.js"></script>
-    <script src="../static/moment.js"></script>
-    <script src="../static/chartjs-adapter-moment.js"></script>
-    <script src="../static/fintech-charts.js"></script>
-    <script src="../static/flatpickr.js"></script>
-    <script src="../static/flatpickr-init.js"></script>
+    <script>
+        function sortTable(columnIndex) {
+            const table = document.getElementById("order-table");
+            const rows = Array.from(table.getElementsByTagName("tbody"));
+
+
+            rows.sort((a, b) => {
+                
+                const cellA = a.getElementsByTagName("td")[columnIndex].querySelector("div").textContent;
+                const cellB = b.getElementsByTagName("td")[columnIndex].querySelector("div").textContent;
+                return cellA.localeCompare(cellB);
+            });
+
+
+        const tbodyElements = table.getElementsByTagName("tbody");
+
+        // Loop through the <tbody> elements and remove each one
+        for (let i = tbodyElements.length - 1; i >= 0; i--) {
+            const tbody = tbodyElements[i];
+            tbody.parentNode.removeChild(tbody);
+        }
+
+            // Reappend sorted rows
+            rows.forEach(row => table.appendChild(row));
+        }
+
+      </script>
+    <script src="/static/alpinejs.min.js" defer></script>
+    <script src="/static/main.js"></script>
+    <script src="/static/chart.js"></script>
+    <script src="/static/moment.js"></script>
+    <script src="/static/chartjs-adapter-moment.js"></script>
+    <script src="/static/fintech-charts.js"></script>
+    <script src="/static/flatpickr.js"></script>
+    <script src="/static/flatpickr-init.js"></script>
+
 </body>
+
 </html>

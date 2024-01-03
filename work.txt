@@ -25,8 +25,6 @@
     Admn: Login Page, SIgnUp, Dashboard, API keys Page, Order Management, User Management Page, Package Management Page, Provider Management Page, Services Page, Package Creation Form
             Provider Creation Form, Provider Update Form, Provider Balance Display Page.
 
-
-
 VirtualHost *:80>
     ServerName 16.16.65.204
     DocumentRoot /var/www/server
@@ -43,9 +41,3 @@ VirtualHost *:80>
 ErrorLog /var/www/server/logs/error.log
 
 </VirtualHost>
-
-
-
-
-
-            

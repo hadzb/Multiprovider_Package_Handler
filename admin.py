@@ -5,6 +5,7 @@ from provider_wrapper import Api
 from services import Service
 from packages import Package
 from orders import Order
+from api_calls import ApiTable
 from urllib.parse import unquote
 from itertools import groupby
 
@@ -54,6 +55,23 @@ def create_service():
         return redirect("http://13.53.111.198/admin/serv")
     else:
         return render_template("create_service.html")
+    
+def parse_configuration(string_input):
+    cat_provider=string_input.split("|")
+    configuration=[]
+
+    for config in cat_provider:
+        mini_config=dict()
+        data=config.split(":")
+        mini_config["provider_id"]=data[0]
+        mini_config["service_id"]=data[1]
+        mini_config["quantity"]=data[2]
+        mini_config["interval"]=data[3]
+        mini_config["rate"]=data[4]
+
+        configuration.append(mini_config)
+
+    return configuration
 
 @admn_blueprint.route("/serv",methods=["GET"])
 def get_services():
@@ -97,6 +115,8 @@ def create_package():
         providers=request.form.getlist('providers')
         services=request.form.getlist('services')
         quantities=request.form.getlist('quantity')
+        intervals=request.form.getlist('interval')
+        rates=request.form.getlist('rate')
 
 
         print(f"providers ... {providers}")
@@ -107,11 +127,12 @@ def create_package():
         package_name=request.form.get("name")
         package_price=request.form.get("price")
         package_rate=request.form.get("rate")
+        package_interval=request.form.get("interval")
         
         package_info=[]
-        for provider,service,quantity in zip(providers,services,quantities):
+        for provider,service,quantity,interval,rate in zip(providers,services,quantities,intervals,rates):
             actual_id=service
-            package_info.append(f"{provider}:{actual_id}:{quantity}")
+            package_info.append(f"{provider}:{actual_id}:{quantity}:{interval}:{rate}")
             print(package_info)
 
         package_info="|".join(package_info)
@@ -119,7 +140,7 @@ def create_package():
 
         # Saving the Package to Database
         p=Package()
-        p.add_package(package_name,package_price,package_rate,package_info)
+        p.add_package(package_name,package_price,package_rate,package_interval,package_info)
 
         all_packages=p.get_all_packages()
         all_data=[]
@@ -129,14 +150,12 @@ def create_package():
             parsed_data["package_id"]=i[0]
             parsed_data["package_name"]=i[1]
             parsed_data["package_price"]=i[2]
-            parsed_data["package_rate"]=i[3]
-            parsed_data["package_provider"]=i[4]
+            parsed_data["package_provider"]=i[3]
+            parsed_data["package_configuration"]=parse_configuration(parsed_data["package_provider"])
             
             all_data.append(parsed_data)
     
         return render_template("_providers.html",data=all_data)
-
-
 
 @admn_blueprint.route("/orders",methods=["GET","POST"])
 def get_orders():
@@ -203,8 +222,8 @@ def get_packages():
             parsed_data["package_id"]=i[0]
             parsed_data["package_name"]=i[1]
             parsed_data["package_price"]=i[2]
-            parsed_data["package_rate"]=i[3]
-            parsed_data["package_provider"]=i[4]
+            parsed_data["package_provider"]=i[3]
+            parsed_data["package_configuration"]=parse_configuration(parsed_data["package_provider"])
 
             collection.append(parsed_data)
             print(collection)
@@ -421,6 +440,30 @@ def get_services_(category,provider):
     categories=groupServicesByCategory(all_services)
     return categories.get(category)
 
+@admn_blueprint.route("/getcall/<int:id>")
+def get_callId(id):
+    table=Order()
+    order_objects=table.display_schedules(id)
+    json_list = []
+    for order_object in order_objects:
+        order_dict = {
+            "order_id": order_object.order_id,
+            "user_id": order_object.user_id,
+            "package_id": order_object.package_id,
+            "service_id": order_object.service_id,
+            "link": order_object.link,
+            "comments": order_object.comments,
+            "quantity": order_object.quantity,
+            "rate": order_object.rate,
+            "interval": order_object.interval,
+            "call_id": order_object.call_id,
+            "order_status": order_object.order_status,
+            "execution_time": order_object.execution_time,
+            "start":order_object.order_start
+        }
+        json_list.append(order_dict)
+    return render_template("scheduled_orders.html",data=json_list)
+
 @admn_blueprint.route("/")
 def admnDashboard():    
     #for the packages
@@ -432,27 +475,14 @@ def admnDashboard():
         parsed_data["package_id"]=i[0]
         parsed_data["package_name"]=i[1]
         parsed_data["package_price"]=i[2]
-        parsed_data["package_rate"]=i[3]
-        parsed_data["package_provider"]=i[4]
+        parsed_data["package_provider"]=i[3]
         package_collection.append(parsed_data)
 
     #for the orders       
     o=Order()
-    orders=o.get_all_orders()
-    order_collection=[]
-    for i in orders:
-        item=dict()
-        item["order_id"]=i[0]
-        item["user_id"]=i[1]
-        item["package_id"]=i[2]
-        item["service_id"]=i[3]
-        item["link"]=i[4]
-        item["comments"]=i[5]
-        item["quantity"]=i[6]
-        item["rate"]=i[7]
-        item["interval"]=i[8]
-        item["order_status"]=i[9]
-        order_collection.append(item)
+    table=ApiTable()
+    orders=table.get_all()
+    order_collection=orders
 
     #for the providers
     providers=database.get_all_providers()

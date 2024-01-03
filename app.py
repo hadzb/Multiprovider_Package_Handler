@@ -16,7 +16,7 @@ from orders import Order
 from packages import Package
 from scheduler import Scheduler
 from orders import Order
-from delivery_drip import DeliveryScheduler
+from s_d_feed import MainScheduler
 
 API_KEY="3bb9c960c00b3469d7b70d7fbcc42f5b"
 my_api=Api(API_KEY)
@@ -54,19 +54,10 @@ with app.app_context():
             )
         """)
         connection.commit()
-    
-    
-    a = Scheduler()
-    delivery = DeliveryScheduler()
 
-#Running the dlivery and time based drip.
-    a.run()
+    delivery = MainScheduler()    
     delivery.run()
     delivery_thread = None
-
-
-
-    
 
 def generate_key():
     user_id=current_user.email
@@ -221,12 +212,12 @@ def add_order():
             link=post_data.get("link","")
             comments=post_data.get("comments","\n")
             quantity=post_data.get("quantity",10)
-            rate=""
-            interval=""
             order_table=Order()
             for task in providers:
                 package_id=task.split(":")[0]
                 service_id=task.split(":")[1]
+                rate=task.split(":")[4]
+                interval=task.split(":")[3]
                 order_status="initiated"
                 user_id=current_user.email
                 print(order_table.add_order(user_id,package_id,service_id,link,comments,quantity,rate,interval,order_status))

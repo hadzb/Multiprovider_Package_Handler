@@ -441,7 +441,7 @@
                                         <thead class="text-xs uppercase text-slate-400 dark:text-slate-500 bg-slate-50 dark:bg-slate-700 dark:bg-opacity-50 rounded-sm">
                                             <tr>
                                                 <th class="p-2 whitespace-nowrap">
-                                                    <div class="font-semibold text-left">PACKAGE ID</div>
+                                                    <div class="font-semibold text-left">PROVIDER ID</div>
                                                 </th>
                                                 <th class="p-2 whitespace-nowrap">
                                                     <div class="font-semibold text-left">PACKAGE NAME</div>
@@ -555,7 +555,7 @@
                         <!-- Table (Market Trends) -->
                         <div class="col-span-full bg-white dark:bg-slate-800 shadow-lg rounded-sm border border-slate-200 dark:border-slate-700">
                             <header class="px-5 py-4 border-b border-slate-100 dark:border-slate-700">
-                                <h2 class="font-semibold text-slate-800 dark:text-slate-100">All Orders</h2>
+                                <h2 class="font-semibold text-slate-800 dark:text-slate-100">API CALL LOG</h2>
                             </header>
                             <div class="p-3">
 
@@ -566,25 +566,10 @@
                                         <thead class="text-xs uppercase text-slate-400 dark:text-slate-500 bg-slate-50 dark:bg-slate-700 dark:bg-opacity-50 rounded-sm">
                                             <tr>
                                                 <th class="p-2 whitespace-nowrap">
-                                                    <div class="font-semibold text-left">Order Id</div>
+                                                    <div class="font-semibold text-left">CALL ID</div>
                                                 </th>
                                                 <th class="p-2 whitespace-nowrap">
-                                                    <div class="font-semibold text-left">Order Quantity</div>
-                                                </th>
-                                                <th class="p-2 whitespace-nowrap">
-                                                    <div class="font-semibold text-left">Package</div>
-                                                </th>
-                                                <th class="p-2 whitespace-nowrap">
-                                                    <div class="font-semibold text-left">Service Id</div>
-                                                </th>
-                                                <th class="p-2 whitespace-nowrap">
-                                                    <div class="font-semibold text-left">Rate</div>
-                                                </th>
-                                                <th class="p-2 whitespace-nowrap">
-                                                    <div class="font-semibold text-left">Interval</div>
-                                                </th>
-                                                <th class="p-2 whitespace-nowrap">
-                                                    <div class="font-semibold text-left">Status</div>
+                                                    <div class="font-semibold text-left">TARGET PACKAGE</div>
                                                 </th>
                                             </tr>
                                         </thead>
@@ -592,29 +577,11 @@
                                         <tbody class="text-sm font-medium divide-y divide-slate-100 dark:divide-slate-700">
                                             {% for order in data.orders %}
                                             <tr>
-                                                <td class="p-2 whitespace-nowrap md:w-1/2">
-
-                                                    <div class="text-xs text-slate-500">{{order.order_id}}</div>
-                                                        </div>
-                                                    </div>
+                                                <td class="p-2 whitespace-nowrap">
+                                                    <a href="http://13.53.111.198/admin/getcall/{{order.call_id}}"><div class="text-left text-rose-500">{{order.call_id}}</div></a>
                                                 </td>
                                                 <td class="p-2 whitespace-nowrap">
-                                                    <div class="font-normal text-left">{{order.quantity}}</div>
-                                                </td>
-                                                <td class="p-2 whitespace-nowrap">
-                                                    <div class="text-left">{{order.package_id}}</div>
-                                                </td>
-                                                <td class="p-2 whitespace-nowrap">
-                                                    <div class="text-left text-rose-500">{{order.service_id}}</div>
-                                                </td>
-                                                <td class="p-2 whitespace-nowrap">
-                                                    <div class="text-left text-rose-500">{{order.rate}}</div>
-                                                </td>
-                                                <td class="p-2 whitespace-nowrap">
-                                                    <div class="text-left text-rose-500">{{order.interval}}</div>
-                                                </td>
-                                                <td class="p-2 whitespace-nowrap">
-                                                    <div class="text-left text-rose-500">{{order.order_status}}</div>
+                                                    <div class="text-left text-rose-500">{{order.package_id}}</div>
                                                 </td>
                                             </tr>
                                             {% endfor %}

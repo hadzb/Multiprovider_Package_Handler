@@ -36,7 +36,6 @@ class DeliveryScheduler:
             conn.commit()
             conn.close()
 
-
     def schedule_and_execute_orders(self):
         print("The Delivery Module is now running and checking for changes.")
 
@@ -46,6 +45,6 @@ class DeliveryScheduler:
             time.sleep(1)
 
     def run(self):
-        job = schedule.every(10).seconds.do(self.update_interval_column)
+        job = schedule.every(1).seconds.do(self.update_interval_column)
         scheduler_thread = threading.Thread(target=self.schedule_and_execute_orders)
         scheduler_thread.start()

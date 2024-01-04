@@ -459,7 +459,9 @@ def get_callId(id):
             "call_id": order_object.call_id,
             "order_status": order_object.order_status,
             "execution_time": order_object.execution_time,
-            "start":order_object.order_start
+            "start":order_object.order_start,
+            "provider_name":order_object.provider_name,
+            "jap_order_id":order_object.jap_order_id
         }
         json_list.append(order_dict)
     return render_template("scheduled_orders.html",data=json_list)

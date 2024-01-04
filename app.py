@@ -55,9 +55,9 @@ with app.app_context():
         """)
         connection.commit()
 
-    delivery = MainScheduler()    
-    delivery.run()
-    delivery_thread = None
+    # delivery = MainScheduler()    
+    # delivery.run()
+    # delivery_thread = None
 
 def generate_key():
     user_id=current_user.email

@@ -3,9 +3,9 @@ from itertools import groupby
 from datetime import datetime, timedelta
 import time
 from displayOrders import DisplayOrdersTable
-
+from provider import Provider
 class DiplayOrder:
-    def __init__(self,order_id,user_id,package_id,service_id,link,comments,quantity,rate,interval,call_id,order_status,execution_time,start):
+    def __init__(self,order_id,user_id,package_id,service_id,link,comments,quantity,rate,interval,call_id,order_status,execution_time,jap_order_id,start,provider_name):
         self.order_id=order_id
         self.user_id=user_id
         self.package_id=package_id
@@ -18,7 +18,11 @@ class DiplayOrder:
         self.call_id=call_id
         self.order_status=order_status
         self.execution_time=execution_time
+        self.jap_order_id=jap_order_id
+        self.provider_name=provider_name
         self.order_start=start
+
+        
 
 # This is a wrapper class around the orders module, interfaces with the database system.
 class Order:
@@ -98,7 +102,7 @@ class Order:
                 data["call_id"]=i[9]
                 data["order_status"]=i[10]
                 collection.append(data)
-
+                
             duplicated_orders=[]
 
             cumulative_execution_time = data["call_id"]
@@ -114,11 +118,16 @@ class Order:
                 cumulative_execution_time=cumulative_execution_time+int(order["interval"])
                 dt_object = datetime.utcfromtimestamp(cumulative_execution_time)
 
-                # Format the datetime object as a human-readable string
                 formatted_time = dt_object.strftime('%Y-%m-%d %H:%M:%S UTC')
 
-                duplicated_orders.append(DiplayOrder(order["order_id"],order["user_id"],order["package_id"],order["service_id"],order["link"],order["comments"],order["quantity"],order["rate"],order["interval"],order["call_id"],order["order_status"],formatted_time,start))
-                                
+                provider_table=Provider()
+                provider_name=provider_table.get_provider(data["package_id"])
+                provider_name=provider_name[1]
+
+                entry=DiplayOrder(order["order_id"],order["user_id"],order["package_id"],order["service_id"],order["link"],order["comments"],order["quantity"],order["rate"],order["interval"],order["call_id"],order["order_status"],formatted_time,"_",start,provider_name)
+                print(f"Added Provider Name {entry.provider_name}")
+                duplicated_orders.append(entry)
+                
             return duplicated_orders
 
     def query_order_by_user(self,user_id):
@@ -189,7 +198,6 @@ class Order:
             results = cursor.fetchall()
             return results
 
-
     def delete_order(self, order_id):
         with sqlite3.connect("file.db") as connection:
             cursor = connection.cursor()
@@ -218,7 +226,6 @@ class Order:
                 data["call_id"]=i[9]
                 data["order_status"]=i[10]
                 collection.append(data)
-        
 
             return collection
 

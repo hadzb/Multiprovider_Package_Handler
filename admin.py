@@ -73,6 +73,20 @@ def parse_configuration(string_input):
 
     return configuration
 
+def parse_one_configuration(string_input):
+    cat_provider=string_input.split("|")
+    configuration=[]
+
+    for config in cat_provider:
+        mini_config=dict()
+        data=config.split(":")
+        mini_config["quantity"]=data[2]
+        mini_config["rate"]=data[4]
+
+        configuration.append(mini_config)
+
+    return configuration
+
 @admn_blueprint.route("/serv",methods=["GET"])
 def get_services():
     #Query the database for all services
@@ -229,6 +243,19 @@ def get_packages():
             print(collection)
         return render_template("_providers.html",data=collection)
 
+@admn_blueprint.route("/get/packages/<int:id>")
+def get_serv_packages(id):
+    with sqlite3.connect("file.db") as connection:
+        cursor=connection.cursor()
+        cursor.execute("SELECT * FROM services WHERE type=?",("package",))
+        data=cursor.fetchall()
+        collection=[]
+        a=Package()
+        packages=a.get_package(id)
+        parsed_data=dict()
+        
+        return parse_one_configuration(packages[3])
+
 @admn_blueprint.route("/deletepackage/<int:entry_id>",methods=["GET"])
 def delete_package(entry_id=""):
     if request.method=="GET":
@@ -365,6 +392,8 @@ def get_balance(entry_id):
 
     return render_template("balance.html",data=data)
 
+
+
 @admn_blueprint.route("/services/<int:entry_id>",methods=["GET"])
 def get_all_services(entry_id):
     a=Service(entry_id)
@@ -439,6 +468,13 @@ def get_services_(category,provider):
     all_services=a.get_all_services()
     categories=groupServicesByCategory(all_services)
     return categories.get(category)
+
+@admn_blueprint.route("/trigger")
+def get_calls():
+    api_table=ApiTable()
+    data=api_table.get_all()
+
+    return render_template("api_calls_table.html",data=data)
 
 @admn_blueprint.route("/getcall/<int:id>")
 def get_callId(id):

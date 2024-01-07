@@ -22,8 +22,6 @@ class DiplayOrder:
         self.provider_name=provider_name
         self.order_start=start
 
-        
-
 # This is a wrapper class around the orders module, interfaces with the database system.
 class Order:
 

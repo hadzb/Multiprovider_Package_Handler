@@ -97,7 +97,7 @@ class MainScheduler:
         for call_id in call_ids:     
             all_orders=order_table.display_schedules(call_id)
             for i in all_orders:
-                if i.order_status in ["failed","initiated","Cancelled"]:
+                if i.order_status in ["failed","Cancelled"]:
                     self.execute_at_time(i,self.make_order)
                 elif i.order_status in ["initiated"]:
                     self.execute_at_time(i,self.make_order)

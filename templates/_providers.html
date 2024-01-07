@@ -569,10 +569,7 @@
                                             </th>
                                             <th class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap">
                                                 <div class="font-semibold text-left">Package Price</div>
-                                            </th>
-                                            <th class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap">
-                                                <div class="font-semibold text-left">Provider ID : Service ID</div>
-                                            </th>                                    
+                                            </th>                                  
                                             
                                             <th class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap">
                                                 <div class="font-semibold text-left">Actions</div>
@@ -602,9 +599,6 @@
                                                 <div class="font-medium text-slate-800 dark:text-slate-100">{{ order.package_price }}</div>
                                             </td>
                                             <td class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap">
-                                                <div class="text-left font-medium text-emerald-500">{{ order.package_provider }}</div>
-                                            </td>
-                                            <td class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap">
                                                 <div class="m-1.5">
                                                     <!-- Start -->
                                                     <a href="http://13.53.111.198/admin/deletepackage/{{order.package_id}}"><button class="btn dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 text-rose-500">
@@ -613,18 +607,6 @@
                                                         </svg>
                                                         <span class="ml-2">Delete</span>
                                                     </button></a>
-                                                    <!-- End -->
-                                                </div>
-                                            </td>
-                                            <td class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap">
-                                                <div class="m-1.5">
-                                                    <!-- Start -->
-                                                    <button class="btn dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 text-slate-600 dark:text-slate-300">
-                                                        <svg class="w-4 h-4 fill-current text-slate-500 dark:text-slate-400 shrink-0" viewBox="0 0 16 16">
-                                                            <path d="M11.7.3c-.4-.4-1-.4-1.4 0l-10 10c-.2.2-.3.4-.3.7v4c0 .6.4 1 1 1h4c.3 0 .5-.1.7-.3l10-10c.4-.4.4-1 0-1.4l-4-4zM4.6 14H2v-2.6l6-6L10.6 8l-6 6zM12 6.6L9.4 4 11 2.4 13.6 5 12 6.6z" />
-                                                        </svg>
-                                                        <span class="ml-2">Edit Package</span>
-                                                    </button>
                                                     <!-- End -->
                                                 </div>
                                             </td>

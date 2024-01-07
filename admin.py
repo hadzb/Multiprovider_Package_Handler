@@ -6,12 +6,14 @@ from services import Service
 from packages import Package
 from orders import Order
 from api_calls import ApiTable
+import datetime
+import time
 from urllib.parse import unquote
 from itertools import groupby
 
 database=Provider()
 admn_blueprint=Blueprint("admn_blueprint",__name__)
-
+api_table=ApiTable()
 def initialize_service():
     with sqlite3.connect("file.db") as connection:
         try:
@@ -73,15 +75,19 @@ def parse_configuration(string_input):
 
     return configuration
 
-def parse_one_configuration(string_input):
+def parse_one_configuration(p_id,string_input):
     cat_provider=string_input.split("|")
     configuration=[]
 
     for config in cat_provider:
         mini_config=dict()
         data=config.split(":")
+        mini_config["package_id"]=str(p_id)
+        mini_config["service_id"]=data[1]
         mini_config["quantity"]=data[2]
-        mini_config["rate"]=data[4]
+        mini_config["rate"]=len(data[2].split(","))
+        mini_config["description"]=data[4]
+        
 
         configuration.append(mini_config)
 
@@ -171,6 +177,84 @@ def create_package():
     
         return render_template("_providers.html",data=all_data)
 
+def validate_key(key_to_check):
+    # Connect to the SQLite database using a 'with' statement
+    with sqlite3.connect("file.db") as conn:
+        cursor = conn.cursor()
+
+        # Query to select the API key and its expiration date
+        query = "SELECT api_key, expiration_date FROM api_keys WHERE api_key = ?"
+        
+        cursor.execute(query, (key_to_check,))
+        result = cursor.fetchone()
+
+        # If the key is not found, return False
+        if not result:
+            return False
+
+        expiration_date=datetime.datetime.fromisoformat(result[1])
+        if datetime.datetime.utcnow() < expiration_date:
+            return {"validity":True, "message":"API key is valid"}
+        else:
+            return {"validity":False,"message":"API key has expired"}
+        
+        
+@admn_blueprint.route("/trigger/order",methods=["POST"])
+def add_order():
+    if request.method=="POST":
+
+        key=request.form.get("key",None)
+        if key==None:
+            return {"error":"Bad Request"}
+
+        results=validate_key(key)
+        if results.get("validity",False):
+            order_table=Order()
+            package_id=request.form.get("service_id")
+
+            #get the package from the database.
+            p=Package()
+            package=p.get_package(package_id)
+            if(package==None):
+                return {"error":"Invalid Service Id"}
+            
+            providers=package[3].split("|")
+            link=request.form.get("link",None)
+            comments=request.form.get("comments",None)
+            quantities=request.form.getlist("quantity")
+
+            order_table=Order()
+            timestamp=int(time.time())
+
+            #Save the order to the api_table.
+            api_table.add_call(timestamp,package_id)
+
+            for task in providers:
+                package_id=task.split(":")[0]
+                service_id=task.split(":")[1]
+                _quantity=task.split(":")[2]
+                _interval=task.split(":")[3]
+                
+                quantity=[str(num) for num in _quantity.split(',')]
+                interval=[str(num) for num in _interval.split(',')]
+
+                if quantity and interval:
+                    call_id=timestamp
+                    order_status="initiated"
+                    
+                    for quant,inter,in zip(quantities,interval):
+                        
+                        order_table.add_order("admin",package_id,service_id,link,comments,call_id,quant,1,inter,order_status)
+                else:
+                   order_table.add_order("admin",package_id,service_id,link,comments,call_id,_quantity,1,_interval,order_status) 
+
+            return redirect("http://13.53.111.198/admin/trigger")
+            
+        else:
+            return {"status":"failed","message":"Your account balance is insufficient"}
+        
+
+
 @admn_blueprint.route("/orders",methods=["GET","POST"])
 def get_orders():
     o=Order()
@@ -254,7 +338,7 @@ def get_serv_packages(id):
         packages=a.get_package(id)
         parsed_data=dict()
         
-        return parse_one_configuration(packages[3])
+        return parse_one_configuration(id,packages[3])
 
 @admn_blueprint.route("/deletepackage/<int:entry_id>",methods=["GET"])
 def delete_package(entry_id=""):
@@ -471,8 +555,12 @@ def get_services_(category,provider):
 
 @admn_blueprint.route("/trigger")
 def get_calls():
+    data=dict()
     api_table=ApiTable()
-    data=api_table.get_all()
+    package_table=Package()
+
+    data["calls"]=api_table.get_all()
+    data["packages"]=package_table.get_all_packages_()
 
     return render_template("api_calls_table.html",data=data)
 

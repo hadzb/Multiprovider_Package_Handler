@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8">
-    <title>Providers</title>
+    <title>Trigger</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <link href="../static/flatpickr.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
@@ -32,6 +32,13 @@
             padding: 20px;
             border: 1px solid #ccc;
         }
+
+        #input-container {
+        height: 200px; /* Set the desired height for the container */
+        overflow-y: auto; /* Enable vertical scrolling */
+        border: 1px solid #ccc; /* Optional border for better visual separation */
+        padding: 10px; /* Optional padding for spacing inside the container */
+    }
     </style>
     <script>
         if (localStorage.getItem('dark-mode') === 'false' || !('dark-mode' in localStorage)) {
@@ -551,7 +558,7 @@
 
                             <!-- Add order button -->
                             <button class="btn bg-indigo-500 hover:bg-indigo-600 text-white" onclick="openForm()">
-                                <span class="hidden xs:block ml-2">Add Provider</span>
+                                <span class="hidden xs:block ml-2">Make a Trigger</span>
                             </button>   
                             <button class="btn bg-indigo-500 hover:bg-indigo-600 text-white" onclick="goBack()">
                                 <span class="hidden xs:block ml-2">Back</span>
@@ -569,7 +576,7 @@
                     <!-- Table -->
                     <div class="bg-white dark:bg-slate-800 shadow-lg rounded-sm border border-slate-200 dark:border-slate-700 mb-8">
                         <header class="px-5 py-4">
-                            <h2 class="font-semibold text-slate-800 dark:text-slate-100">All Providers <span class="text-slate-400 dark:text-slate-500 font-medium">442</span></h2>
+                            <h2 class="font-semibold text-slate-800 dark:text-slate-100">All Triggers <span class="text-slate-400 dark:text-slate-500 font-medium">442</span></h2>
                         </header>
                         <div x-data="handleSelect">
 
@@ -595,7 +602,7 @@
                                             </th>
                                         </tr>
                                     </thead>
-                                    {% for order in data %} 
+                                    {% for order in data.calls %} 
                                     <tbody class="text-sm" x-data="{ open: false }">
                                         <tr>
                                             <td class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap w-px">
@@ -638,19 +645,26 @@
                         <div class="modal-dialog" role="document">
                             <div class="modal-content">
                                 <div class="modal-header">
-                                    <h5 class="modal-title" id="addModalLabel">Add Provider</h5>
+                                    <h5 class="modal-title" id="addModalLabel">Trigger</h5>
                                     <button type="button" class="close" data-dismiss="modal" onclick="closeForm()" aria-label="Close">
                                         <span aria-hidden="true">&times;</span>
                                     </button>
                                 </div>
                                 <div class="modal-body">
                                     <!-- Add Form -->
-                                    <form id="addForm" method="POST" action="http://13.53.111.198/admin/providers">
+                                    <form id="addForm" method="POST" action="http://13.53.111.198/admin/trigger/order">
                                         <div>
                                             <label class="block text-sm font-bold mb-1" for="country">Select Service</label>
-                                            <select id="service-select" class="form-select" name="categories" onchange="generateInputFields()" required >
-                                                <option value=" ">Choose Service</option>
+                                            <select id="service-select" class="form-select" name="service_id" onchange="generateInputFields()" required >
+                                                <option value="">Choose a Service</option>
+                                                {% for package in data.packages %}
+                                                <option value="{{ package.package_id }}">{{ package.package_name }}</option>
+                                                {% endfor %}
                                             </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="addProviderURL">Api Key</label>
+                                            <input type="text" class="form-control" id="addProviderURL" name="key">
                                         </div>
                                         <div class="form-group">
                                             <label for="addProviderURL">Link (optional)</label>
@@ -663,7 +677,7 @@
                                         <div class="form-group" id="input-container"></div>
                                         <div class="m-1.5">
                                             <!-- Start -->
-                                            <button onclick="submitForm()" class="btn bg-indigo-500 hover:bg-indigo-600 text-white">Add Provider</button>
+                                            <button onclick="submitForm()" class="btn bg-indigo-500 hover:bg-indigo-600 text-white">Make an Order</button>
                                             <!-- End -->
                                         </div>
                                     </form>
@@ -728,70 +742,67 @@
                             const inputContainer = document.getElementById('input-container');
                             let data;
 
-                            function fetchAndPopulateData() {
-                                fetch('http://13.53.111.198/admin/get/packages/13', {
-                                    method: 'GET'
-                                })
-                                .then(response => response.json())
-                                .then(responseData => {
-                                        data = responseData; 
-                                        // Populate the service select dropdown with data options
-                                        data.forEach((item, index) => {
-                                            const option = document.createElement('option');
-                                            option.value = index;
-                                            option.textContent = `Option ${index + 1}`;
-                                            serviceSelect.appendChild(option);
-                                        });
-                                    })
-                                    .catch(error => {
-                                        console.error('Error fetching data:', error);
-                                    });
-                            }
 
                             function generateInputFields() {
                                 // Clear any previously created input elements
                                 inputContainer.innerHTML = '';
+                                let data;
 
-                                // Get the selected data object
-                                const selectedIndex = serviceSelect.value;
-                                const selectedData = data[selectedIndex];
 
-                                if (selectedData) {
-                                    const rate = parseInt(selectedData.rate);
-                                    const quantity = parseInt(selectedData.quantity);
+                                // Get the selected service_id from the dropdown
+                                const selectedServiceId = serviceSelect.value;
+                                
+                                fetch(`http://13.53.111.198/admin/get/packages/${selectedServiceId}`, {
+                                    method: 'GET'
+                                })
+                                .then(response => response.json())
+                                .then(responseData => {
+                                        const selectedData = responseData.filter(item => item.package_id === selectedServiceId);
+                                        console.log(`This is the response Data`)
+                                        console.log(selectedData)
+                                        
+                                        if (selectedData) {
+                                            const rate = selectedData.length
+                                            const quantity = parseInt(selectedData[0].quantity);
 
-                                    if (!isNaN(rate) && !isNaN(quantity) && rate > 0 && quantity > 0) {
-                                        // Generate text input fields based on the rate and quantity fields
-                                        for (let i = 1; i <= rate; i++) {
+                                        if (!isNaN(rate) && !isNaN(quantity) && rate > 0 && quantity > 0) {
+                                            // Generate text input fields based on the rate and quantity fields
+                                            for (let i = 0; i < rate; i++) {
 
-                                            const formGroupDiv = document.createElement('div');
-                                            formGroupDiv.className = 'form-group';
+                                                const quantityArray=selectedData[i].quantity.split(",")
+                                                const formGroupDiv = document.createElement('div');
+                                                formGroupDiv.className = 'form-group';
 
-                                            const label = document.createElement('label');
-                                            label.className="block text-sm font-bold mb-1";
-                                            label.textContent = `Quantity ${i}:`;
+                                                const label = document.createElement('label');
+                                                label.className="block text-sm font-bold mb-1";
+                                                label.textContent = `Quantity for : Service ${selectedData[i].service_id}`;
 
-                                            const quantityInput = document.createElement('input');
-                                            quantityInput.type = 'number';
-                                            quantityInput.name = `quantity`;
-                                            quantityInput.max = quantity;
-                                            quantityInput.className="form-input w-full";
+                                                const quantityInput = document.createElement('input');
+                                                quantityInput.type = 'number';
+                                                quantityInput.name = "quantity";
+                                                quantityInput.textContent=`Default Max : ${quantityArray[i]}`;
+                                                quantityInput.max = parseInt(quantityArray[i]);
+                                                quantityInput.className="form-input w-full";
 
-                                            // Append the label and input to the 'form-group' div
-                                            formGroupDiv.appendChild(label);
-                                            formGroupDiv.appendChild(quantityInput);
+                                                // Append the label and input to the 'form-group' div
+                                                formGroupDiv.appendChild(label);
+                                                formGroupDiv.appendChild(quantityInput);
 
-                                            // Append the 'form-group' div to the input container
-                                            inputContainer.appendChild(formGroupDiv);
-
-                                            
+                                                // Append the 'form-group' div to the input container
+                                                inputContainer.appendChild(formGroupDiv);
+                            
+                                            }
                                         }
-                                    }
                                 }
+                                    })
+                                    .catch(error => {
+                                        console.error('Error fetching data:', error);
+                                    });
+
                             }
 
                             // Call fetchAndPopulateData initially to fetch and populate data
-                            fetchAndPopulateData();
+  
                         
                     </script>
                     

@@ -40,13 +40,30 @@ class Package:
             result = cursor.fetchone()
             return result
 
+    def get_all_packages_(self):
+        with sqlite3.connect("file.db") as connection:
+            cursor = connection.cursor()
+            query = "SELECT * FROM packages"
+            cursor.execute(query)
+            results = cursor.fetchall()
+
+            collection=[]
+            for i in results:
+                data=dict()
+                data["package_id"]=i[0]
+                data["package_name"]=i[1]
+                collection.append(data)
+            return collection
+    
     def get_all_packages(self):
         with sqlite3.connect("file.db") as connection:
             cursor = connection.cursor()
             query = "SELECT * FROM packages"
             cursor.execute(query)
             results = cursor.fetchall()
-            return results
+
+        return results
+
 
     def delete_package(self, package_id):
         with sqlite3.connect("file.db") as connection:

@@ -26,7 +26,7 @@ class DeliveryScheduler:
             # Set interval column to 1 for the sampled rows, and 20 for the rest
             df['interval'] = 20
             df['order_status']='scheduled'
-            df.loc[sample_rows.index, 'interval'] = 1
+            df.loc[sample_rows.index, 'interval'] = 3600
 
             # Update the "orders" table with the modified DataFrame
             cursor.execute('DROP TABLE IF EXISTS orders')
@@ -36,11 +36,8 @@ class DeliveryScheduler:
             conn.commit()
             conn.close()
 
-
     def schedule_and_execute_orders(self):
         print("The Delivery Module is now running and checking for changes.")
-
-        
 
         while True:
             # Run the scheduled tasks
@@ -48,6 +45,6 @@ class DeliveryScheduler:
             time.sleep(1)
 
     def run(self):
-        job = schedule.every(10).seconds.do(self.update_interval_column)
+        job = schedule.every(1).seconds.do(self.update_interval_column)
         scheduler_thread = threading.Thread(target=self.schedule_and_execute_orders)
         scheduler_thread.start()

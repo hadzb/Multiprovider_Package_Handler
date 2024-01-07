@@ -25,7 +25,19 @@
     Admn: Login Page, SIgnUp, Dashboard, API keys Page, Order Management, User Management Page, Package Management Page, Provider Management Page, Services Page, Package Creation Form
             Provider Creation Form, Provider Update Form, Provider Balance Display Page.
 
+VirtualHost *:80>
+    ServerName 16.16.65.204
+    DocumentRoot /var/www/server
 
+    WSGIDaemonProcess your_app_name user=ubuntu group=ubuntu threads=5
+    WSGIProcessGroup your_app_name
+    WSGIScriptAlias / /var/www/server/app.wsgi
 
+    <Directory /var/www/server/>  # Corrected path to match DocumentRoot
+        WSGIProcessGroup your_app_name
+        WSGIApplicationGroup %{GLOBAL}
+        Require all granted
+    </Directory>
+ErrorLog /var/www/server/logs/error.log
 
-            
+</VirtualHost>

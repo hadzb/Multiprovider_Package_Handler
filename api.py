@@ -57,8 +57,4 @@ class Api:
         response=self.connect(post_data)
         return response
         
-# a=Api("3bb9c960c00b3469d7b70d7fbcc42f5b")
-# data={"key":"3bb9c960c00b3469d7b70d7fbcc42f5b","service":2929,"link":"https://www.instagram.com/p/ClciEydKLM-/","action":"add","quantity":"10","comments":"hello\n"}
-
-# print(a.order(data))
 

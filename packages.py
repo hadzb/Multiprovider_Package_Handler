@@ -8,25 +8,24 @@ class Package:
                 package_id INTEGER PRIMARY KEY AUTOINCREMENT,
                 package_name TEXT,
                 package_price REAL,
-                package_rate INTEGER,
                 package_provider TEXT
             )"""
             cursor.execute(query)
             connection.commit()
         print("Packages table is ready!")
 
-    def add_package(self,name,price,rate,provider):
+    def add_package(self,name,price,rate,interval,provider):
         with sqlite3.connect("file.db") as connection:
             cursor = connection.cursor()
-            query = "INSERT INTO packages (package_name,package_price, package_rate, package_provider) VALUES (?, ?, ?, ?)"
-            cursor.execute(query, (name, price, rate, provider))
+            query = "INSERT INTO packages (package_name,package_price,package_provider) VALUES (?, ?, ?)"
+            cursor.execute(query, (name, price, provider))
             connection.commit()
             return {"status": True, "message": f"Added package {name} to the list of packages"}
 
     def edit_package(self, update_data):
         with sqlite3.connect("file.db") as connection:
             cursor = connection.cursor()
-            query = "UPDATE packages SET package_name=?,package_price=?, package_rate=?, package_provider=? WHERE package_id=?"
+            query = "UPDATE packages SET package_name=?,package_price=?,package_provider=? WHERE package_id=?"
             params = update_data
             cursor.execute(query, params)
             connection.commit()
@@ -41,13 +40,30 @@ class Package:
             result = cursor.fetchone()
             return result
 
+    def get_all_packages_(self):
+        with sqlite3.connect("file.db") as connection:
+            cursor = connection.cursor()
+            query = "SELECT * FROM packages"
+            cursor.execute(query)
+            results = cursor.fetchall()
+
+            collection=[]
+            for i in results:
+                data=dict()
+                data["package_id"]=i[0]
+                data["package_name"]=i[1]
+                collection.append(data)
+            return collection
+    
     def get_all_packages(self):
         with sqlite3.connect("file.db") as connection:
             cursor = connection.cursor()
             query = "SELECT * FROM packages"
             cursor.execute(query)
             results = cursor.fetchall()
-            return results
+
+        return results
+
 
     def delete_package(self, package_id):
         with sqlite3.connect("file.db") as connection:

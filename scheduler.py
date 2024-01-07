@@ -37,7 +37,7 @@ class Scheduler():
             api_url = p_data[2]
 
             if interval == "":
-                interval = 10
+                interval = 1
             if rate == "":
                 rate = 1
 
@@ -72,20 +72,16 @@ class Scheduler():
                 "groups": groups,
                 "answer_number": answer_number
             }
+            self.drip_feed(quantity,interval,rate,api,data)
 
-            # Within each interval, execute this function n times.
-            for i in range(int(executions)):
-                print(f"Executing service {data.get('service')}")
-                # o.change_order_status("complete", order_id)
-
-                #Uncomment the following lines when you want to actually place orders
-                response = api.order(data)
-                print(response)
-                if not response.get("error", False):
-                    o.change_order_status("complete", order_id)
-                else:
-                    print()
-                    o.change_order_status("Failed", order_id)
+    def drip_feed(self,quantity, interval,rate,api,data):
+        for i in range(0,rate):
+            response = api.order(data)
+            if not response.get("error", False):
+                o.change_order_status("running", order_id)
+            else:
+                o.change_order_status("Failed", order_id)
+        return response
 
     def schedule_and_execute_orders(self):
         print("The scheduler is now running and checking for changes.")
@@ -101,4 +97,3 @@ class Scheduler():
         job = schedule.every(1).second.do(self.make_order)
         scheduler_thread = threading.Thread(target=self.schedule_and_execute_orders)
         scheduler_thread.start()
-

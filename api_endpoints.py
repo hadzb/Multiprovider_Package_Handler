@@ -4,11 +4,17 @@ from api import Api
 import datetime
 from packages import Package
 from orders import Order
+import time
+from api_calls import ApiTable
+
 api_blueprint=Blueprint("api_blueprint",__name__)
 my_api=Api("7627ead53418739cbdf69bd5fef497b0")
 package_db=Package()
 
+api_table=ApiTable()
 
+def parse_string(s):
+    return [int(num) for num in s.split(',')]
 @api_blueprint.route("/order",methods=["POST"])
 def add_order():
     if request.method=="POST":
@@ -32,24 +38,40 @@ def add_order():
             if(package==None):
                 return {"error":"Invalid Service Id"}
             
-            providers=package[4].split("|")
+            providers=package[3].split("|")
             link=post_data.get("link","")
-            comments=post_data.get("comments","\n")
+            comments=post_data.get("comments",None)
             quantity=post_data.get("quantity",10)
-            rate=""
-            interval=""
             order_table=Order()
+            timestamp=int(time.time())
+
+            api_table.add_call(timestamp,package_id)
+
             for task in providers:
                 package_id=task.split(":")[0]
                 service_id=task.split(":")[1]
-                order_status="initiated"
-                user_id="api_order"
+                _quantity=task.split(":")[2]
+                _interval=task.split(":")[3]
+                
 
-                return (order_table.add_order(user_id,package_id,service_id,link,comments,quantity,rate,interval,order_status))
+                quantity=[str(num) for num in _quantity.split(',')]
+                interval=[str(num) for num in _interval.split(',')]
+
+                if quantity and interval:
+                    call_id=timestamp
+                    order_status="initiated"
+                    user_id=post_data.get("user_id")
+                    
+                    for quant,inter in zip(quantity,interval):
+                        
+                        order_table.add_order(user_id,package_id,service_id,link,comments,call_id,quant,1,inter,order_status)
+                else:
+                   order_table.add_order(user_id,package_id,service_id,link,comments,call_id,_quantity,1,_interval,order_status) 
+
+            return {"status":"sucesss","message":"Order was placed, check dashboard for progress"}
         else:
-            return {"error":"Your API Key is invalid or expired"}
+            return {"status":"failed","message":"Your account balance is insufficient"}
         
-
 def validate_key(user_id,api_key):
     with sqlite3.connect("file.db") as connection:
         cusor=connection.cursor()

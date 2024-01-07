@@ -526,11 +526,14 @@
                             </div>
 
                             <!-- Add order button -->
-                            <a href="http://127.0.0.1:5000/admin/createpkg"><button class="btn bg-indigo-500 hover:bg-indigo-600 text-white">
+                            <a href="http://13.53.111.198/admin/createpkg"><button class="btn bg-indigo-500 hover:bg-indigo-600 text-white">
                                 <span class="hidden xs:block ml-2">Add Package</span>
                             </button></a>
-                            <button class="btn bg-indigo-500 hover:bg-indigo-600 text-white" onclick="goBack()">
+                            <a href="http://13.53.111.198/admin/"><button class="btn bg-indigo-500 hover:bg-indigo-600 text-white">
                                 <span class="hidden xs:block ml-2">Home</span>
+                            </button></a>
+                            <button class="btn bg-indigo-500 hover:bg-indigo-600 text-white" onclick="goBack()">
+                                <span class="hidden xs:block ml-2">Back</span>
                             </button>                        
                             
                         </div>
@@ -566,13 +569,7 @@
                                             </th>
                                             <th class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap">
                                                 <div class="font-semibold text-left">Package Price</div>
-                                            </th>
-                                            <th class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap">
-                                                <div class="font-semibold text-left">Package Rate</div>
-                                            </th>
-                                            <th class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap">
-                                                <div class="font-semibold text-left">Provider ID : Service ID</div>
-                                            </th>                                    
+                                            </th>                                  
                                             
                                             <th class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap">
                                                 <div class="font-semibold text-left">Actions</div>
@@ -602,15 +599,9 @@
                                                 <div class="font-medium text-slate-800 dark:text-slate-100">{{ order.package_price }}</div>
                                             </td>
                                             <td class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap">
-                                                <div class="font-medium text-slate-800 dark:text-slate-100">{{ order.package_rate }}</div>
-                                            </td>
-                                            <td class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap">
-                                                <div class="text-left font-medium text-emerald-500">{{ order.package_provider }}</div>
-                                            </td>
-                                            <td class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap">
                                                 <div class="m-1.5">
                                                     <!-- Start -->
-                                                    <a href="http://127.0.0.1:5000/admin/deletepackage/{{order.package_id}}"><button class="btn dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 text-rose-500">
+                                                    <a href="http://13.53.111.198/admin/deletepackage/{{order.package_id}}"><button class="btn dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 text-rose-500">
                                                         <svg class="w-4 h-4 fill-current shrink-0" viewBox="0 0 16 16">
                                                             <path d="M5 7h2v6H5V7zm4 0h2v6H9V7zm3-6v2h4v2h-1v10c0 .6-.4 1-1 1H2c-.6 0-1-.4-1-1V5H0V3h4V1c0-.6.4-1 1-1h6c.6 0 1 .4 1 1zM6 2v1h4V2H6zm7 3H3v9h10V5z" />
                                                         </svg>
@@ -619,19 +610,65 @@
                                                     <!-- End -->
                                                 </div>
                                             </td>
-                                            <td class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap">
-                                                <div class="m-1.5">
-                                                    <!-- Start -->
-                                                    <button class="btn dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 text-slate-600 dark:text-slate-300">
-                                                        <svg class="w-4 h-4 fill-current text-slate-500 dark:text-slate-400 shrink-0" viewBox="0 0 16 16">
-                                                            <path d="M11.7.3c-.4-.4-1-.4-1.4 0l-10 10c-.2.2-.3.4-.3.7v4c0 .6.4 1 1 1h4c.3 0 .5-.1.7-.3l10-10c.4-.4.4-1 0-1.4l-4-4zM4.6 14H2v-2.6l6-6L10.6 8l-6 6zM12 6.6L9.4 4 11 2.4 13.6 5 12 6.6z" />
+
+                                            <td class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap w-px">
+                                                <div class="flex items-center">
+                                                    <button class="text-slate-400 hover:text-slate-500 dark:text-slate-500 dark:hover:text-slate-400 transform" :class="{ 'rotate-180': open }" @click.prevent="open = !open" :aria-expanded="open" aria-controls="description-01">
+                                                        <span class="sr-only">Package Info</span>
+                                                        <svg class="w-8 h-8 fill-current" viewBox="0 0 32 32">
+                                                            <path d="M16 20l-5.4-5.4 1.4-1.4 4 4 4-4 1.4 1.4z" />
                                                         </svg>
-                                                        <span class="ml-2">Edit Package</span>
                                                     </button>
-                                                    <!-- End -->
                                                 </div>
                                             </td>
                                         </tr>
+                                        <tr id="description-01" role="region" x-show="open" x-cloak>
+                                            <td colspan="10" class="px-2 first:pl-5 last:pr-5 py-3">
+                                            <table class="table-auto w-full dark:text-slate-300 divide-y divide-slate-200 dark:divide-slate-700">
+                                                <thead class="text-xs uppercase text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-900/20 border-t border-slate-200 dark:border-slate-700">
+
+                                                    <th class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap">
+                                                        <div class="font-semibold text-left">Provider Id</div>
+                                                    </th>
+                                                    <th class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap">
+                                                        <div class="font-semibold text-left">Service Id</div>
+                                                    </th>
+                                                    <th class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap">
+                                                        <div class="font-semibold text-left">Quantity</div>
+                                                    </th>
+                                                    <th class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap">
+                                                        <div class="font-semibold text-left">Interval</div>
+                                                    </th>
+                                                    <th class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap">
+                                                        <div class="font-semibold text-left">Frequency</div>
+                                                    </th>
+                                                </thead>
+                                                {% for config in order.package_configuration %}
+                                                <tbody class="text-sm" x-data="{ open: false }">
+                                                    <tr>
+                                                        <td class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap">
+                                                            <div class="inline-flex font-medium bg-emerald-100 dark:bg-emerald-400/30 text-emerald-600 dark:text-emerald-400 rounded-full text-center px-2.5 py-0.5">{{config.provider_id}}</div>
+                                                        </td>
+                                                        <td class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap">
+                                                            <div class="inline-flex font-medium bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 rounded-full text-center px-2.5 py-0.5">{{config.service_id}}</div>
+                                                        </td>
+                                                        <td class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap">
+                                                            <div class="inline-flex font-medium bg-amber-100 dark:bg-amber-400/30 text-amber-600 dark:text-amber-400 rounded-full text-center px-2.5 py-0.5">{{config.quantity}}</div>
+                                                        </td>
+                                                        <td class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap">
+                                                            <div class="inline-flex font-medium bg-amber-100 dark:bg-amber-400/30 text-amber-600 dark:text-amber-400 rounded-full text-center px-2.5 py-0.5">{{config.interval}}</div>
+                                                        </td>
+                                                        <td class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap">
+                                                            <div class="inline-flex font-medium bg-emerald-100 dark:bg-emerald-400/30 text-emerald-600 dark:text-emerald-400 rounded-full text-center px-2.5 py-0.5">{{config.rate}}</div>
+                                                        </td>
+                                                    </tr>
+
+                                                </tbody>
+                                                {% endfor %}
+                                            </table>
+                                        </td>
+                                        </tr>
+                                        
                                     </tbody>
                                     {% endfor %}   
                                 </table>

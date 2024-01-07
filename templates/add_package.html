@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.6/css/selectize.bootstrap3.min.css" integrity="sha256-ze/OEYGcFbPRmvCnrSeKbRTtjG4vGLHXgOqsyLFTRjg=" crossorigin="anonymous" />
     <title>CREATE A PACKAGE</title>
 
     <style>
@@ -49,7 +50,7 @@ button:hover {
 </head>
 <body>
     <div id="parent">
-    <form action="http://127.0.0.1:5000/admin/createpkg" method="post" id="form">
+    <form action="http://13.53.111.198/admin/createpkg" method="post" id="form">
         <label for="service_price">Package Price:</label>
         <input type="text" name="price" required>
 
@@ -74,13 +75,7 @@ button:hover {
             {% endfor %}
             </select>
             
-            <label for="provider">Category:</label>
-            <select id ="category" name="categories">
-                {% for option in data.categories[providerid] %}
-                <option value="{{option}}">{{option}}</option>
-            {% endfor %}
-            </select>
-            
+
             <label for="provider">Service:</label>
             <select id="service" name="services">
                 {% for option in data.services[providerid] %}
@@ -112,7 +107,7 @@ button:hover {
         $(document).ready(function() {
             // Function to update services based on the selected provider
             function updateServices(providerId) {
-                $.get(`http://127.0.0.1:5000/admin/getserv/${providerId}`, function(data) {
+                $.get(`http://13.53.111.198/admin/getserv/${providerId}`, function(data) {
                     // Clear and populate the service dropdown
                     var serviceDropdown = $('#service');
                     serviceDropdown.empty();
@@ -124,7 +119,7 @@ button:hover {
 
             // Function to update categories based on the selected provider
             function updateCategories(providerId) {
-                $.get(`http://127.0.0.1:5000/admin/getcat/${providerId}`, function(data) {
+                $.get(`http://13.53.111.198/admin/getcat/${providerId}`, function(data) {
                     // Clear and populate the category dropdown
                     var categoryDropdown = $('#category');
                     categoryDropdown.empty();
@@ -148,6 +143,12 @@ button:hover {
                 $('#service').after(clonedForm);
             });
         });
+
+//         $(document).ready(function () {
+//        $('services').selectize({
+//            sortField: 'text'
+//        });
+//    });
     </script>
 
 </body>

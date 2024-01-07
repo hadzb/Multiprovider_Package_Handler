@@ -5,10 +5,15 @@ from provider_wrapper import Api
 from services import Service
 from packages import Package
 from orders import Order
+from api_calls import ApiTable
+import datetime
+import time
+from urllib.parse import unquote
+from itertools import groupby
 
 database=Provider()
 admn_blueprint=Blueprint("admn_blueprint",__name__)
-
+api_table=ApiTable()
 def initialize_service():
     with sqlite3.connect("file.db") as connection:
         try:
@@ -49,9 +54,44 @@ def create_service():
             except Exception as e:
                 print(e)
 
-        return redirect("http://127.0.0.1:5000/admin/serv")
+        return redirect("http://13.53.111.198/admin/serv")
     else:
         return render_template("create_service.html")
+    
+def parse_configuration(string_input):
+    cat_provider=string_input.split("|")
+    configuration=[]
+
+    for config in cat_provider:
+        mini_config=dict()
+        data=config.split(":")
+        mini_config["provider_id"]=data[0]
+        mini_config["service_id"]=data[1]
+        mini_config["quantity"]=data[2]
+        mini_config["interval"]=data[3]
+        mini_config["rate"]=data[4]
+
+        configuration.append(mini_config)
+
+    return configuration
+
+def parse_one_configuration(p_id,string_input):
+    cat_provider=string_input.split("|")
+    configuration=[]
+
+    for config in cat_provider:
+        mini_config=dict()
+        data=config.split(":")
+        mini_config["package_id"]=str(p_id)
+        mini_config["service_id"]=data[1]
+        mini_config["quantity"]=data[2]
+        mini_config["rate"]=len(data[2].split(","))
+        mini_config["description"]=data[4]
+        
+
+        configuration.append(mini_config)
+
+    return configuration
 
 @admn_blueprint.route("/serv",methods=["GET"])
 def get_services():
@@ -89,31 +129,38 @@ def create_package():
         data["providers"]=parse_package_response(all_providers)
         data["services"]=[{}]
         data["categories"]=get_categories(parse_service_response(data["providers"]))
-        return render_template("add_package.html",data=data)
+        return render_template("form_create_package.html",data=data)
     else:
 
         providers=request.form.getlist('providers')
         services=request.form.getlist('services')
         quantities=request.form.getlist('quantity')
+        intervals=request.form.getlist('interval')
+        rates=request.form.getlist('rate')
+
+
+        print(f"providers ... {providers}")
+        print(f"services ... {services}")
+        print(f"quantities ... {quantities}")
+
 
         package_name=request.form.get("name")
         package_price=request.form.get("price")
         package_rate=request.form.get("rate")
-        package_max=request.form.get("max")
+        package_interval=request.form.get("interval")
         
         package_info=[]
-        for provider,service,quantity in zip(providers,services,quantities):
-            serviceDatabase=Service(provider)
-            serv_id=serviceDatabase.get_service(service)
-            actual_id=serv_id[8]
-            package_info.append(f"{provider}:{actual_id}:{quantity}")
+        for provider,service,quantity,interval,rate in zip(providers,services,quantities,intervals,rates):
+            actual_id=service
+            package_info.append(f"{provider}:{actual_id}:{quantity}:{interval}:{rate}")
+            print(package_info)
 
         package_info="|".join(package_info)
         print(package_info)
 
         # Saving the Package to Database
         p=Package()
-        p.add_package(package_name,package_price,package_rate,package_info)
+        p.add_package(package_name,package_price,package_rate,package_interval,package_info)
 
         all_packages=p.get_all_packages()
         all_data=[]
@@ -123,12 +170,90 @@ def create_package():
             parsed_data["package_id"]=i[0]
             parsed_data["package_name"]=i[1]
             parsed_data["package_price"]=i[2]
-            parsed_data["package_rate"]=i[3]
-            parsed_data["package_provider"]=i[4]
+            parsed_data["package_provider"]=i[3]
+            parsed_data["package_configuration"]=parse_configuration(parsed_data["package_provider"])
             
             all_data.append(parsed_data)
     
-        return render_template("packages.html",data=all_data)
+        return render_template("_providers.html",data=all_data)
+
+def validate_key(key_to_check):
+    # Connect to the SQLite database using a 'with' statement
+    with sqlite3.connect("file.db") as conn:
+        cursor = conn.cursor()
+
+        # Query to select the API key and its expiration date
+        query = "SELECT api_key, expiration_date FROM api_keys WHERE api_key = ?"
+        
+        cursor.execute(query, (key_to_check,))
+        result = cursor.fetchone()
+
+        # If the key is not found, return False
+        if not result:
+            return False
+
+        expiration_date=datetime.datetime.fromisoformat(result[1])
+        if datetime.datetime.utcnow() < expiration_date:
+            return {"validity":True, "message":"API key is valid"}
+        else:
+            return {"validity":False,"message":"API key has expired"}
+        
+        
+@admn_blueprint.route("/trigger/order",methods=["POST"])
+def add_order():
+    if request.method=="POST":
+
+        key=request.form.get("key",None)
+        if key==None:
+            return {"error":"Bad Request"}
+
+        results=validate_key(key)
+        if results.get("validity",False):
+            order_table=Order()
+            package_id=request.form.get("service_id")
+
+            #get the package from the database.
+            p=Package()
+            package=p.get_package(package_id)
+            if(package==None):
+                return {"error":"Invalid Service Id"}
+            
+            providers=package[3].split("|")
+            link=request.form.get("link",None)
+            comments=request.form.get("comments",None)
+            quantities=request.form.getlist("quantity")
+
+            order_table=Order()
+            timestamp=int(time.time())
+
+            #Save the order to the api_table.
+            api_table.add_call(timestamp,package_id)
+
+            for task in providers:
+                package_id=task.split(":")[0]
+                service_id=task.split(":")[1]
+                _quantity=task.split(":")[2]
+                _interval=task.split(":")[3]
+                
+                quantity=[str(num) for num in _quantity.split(',')]
+                interval=[str(num) for num in _interval.split(',')]
+
+                if quantity and interval:
+                    call_id=timestamp
+                    order_status="initiated"
+                    
+                    for quant,inter,in zip(quantities,interval):
+                        
+                        order_table.add_order("admin",package_id,service_id,link,comments,call_id,quant,1,inter,order_status)
+                else:
+                   order_table.add_order("admin",package_id,service_id,link,comments,call_id,_quantity,1,_interval,order_status) 
+
+            return redirect("http://13.53.111.198/admin/trigger")
+            
+        else:
+            return {"status":"failed","message":"Your account balance is insufficient"}
+        
+
 
 @admn_blueprint.route("/orders",methods=["GET","POST"])
 def get_orders():
@@ -195,19 +320,32 @@ def get_packages():
             parsed_data["package_id"]=i[0]
             parsed_data["package_name"]=i[1]
             parsed_data["package_price"]=i[2]
-            parsed_data["package_rate"]=i[3]
-            parsed_data["package_provider"]=i[4]
+            parsed_data["package_provider"]=i[3]
+            parsed_data["package_configuration"]=parse_configuration(parsed_data["package_provider"])
 
             collection.append(parsed_data)
             print(collection)
         return render_template("_providers.html",data=collection)
+
+@admn_blueprint.route("/get/packages/<int:id>")
+def get_serv_packages(id):
+    with sqlite3.connect("file.db") as connection:
+        cursor=connection.cursor()
+        cursor.execute("SELECT * FROM services WHERE type=?",("package",))
+        data=cursor.fetchall()
+        collection=[]
+        a=Package()
+        packages=a.get_package(id)
+        parsed_data=dict()
+        
+        return parse_one_configuration(id,packages[3])
 
 @admn_blueprint.route("/deletepackage/<int:entry_id>",methods=["GET"])
 def delete_package(entry_id=""):
     if request.method=="GET":
         a=Package()
         a.delete_package(entry_id)
-        return redirect("http://127.0.0.1:5000/admin/packages")
+        return redirect("http://13.53.111.198/admin/packages")
 
 
 @admn_blueprint.route("/editpackage",methods=["POST"])
@@ -254,6 +392,14 @@ def get_providers():
         provider_key=request.form.get("provider_key")
         response=database.add_provider(provider_name,provider_url,provider_key)
 
+        provider_id=response["provider_id"]
+        a=Service(provider_id)
+        a.initialize_services()
+        serv=a.get_all_services()
+        
+        #Print all the services.
+        print(serv)
+
         if response["status"]==True:
             providers=database.get_all_providers()
             collection=[]
@@ -264,6 +410,8 @@ def get_providers():
                 prov["provider_url"]=provider[2]
                 prov["provider_key"]=provider[3]
                 collection.append(prov)
+
+        
             return render_template("providers.html",data=collection)
         else:
             return {"error":"could not parse the response"}
@@ -282,7 +430,7 @@ def edit_provider(entry_id=""):
 
         else:
             print("Element does not exist in the database.")
-            return redirect("http://127.0.0.1:5000/admin/providers")
+            return redirect("http://13.53.111.198/admin/providers")
 
 @admn_blueprint.route("/editprovider",methods=["POST"])
 def edt_provider():
@@ -313,7 +461,7 @@ def edt_provider():
 def delete_provider(entry_id=""):
     if request.method=="GET":
         database.delete_provider(entry_id)
-        return redirect("http://127.0.0.1:5000/admin/providers")
+        return redirect("http://13.53.111.198/admin/providers")
 
 @admn_blueprint.route("/balance/<int:entry_id>",methods=["GET"])
 def get_balance(entry_id):
@@ -328,9 +476,10 @@ def get_balance(entry_id):
 
     return render_template("balance.html",data=data)
 
+
+
 @admn_blueprint.route("/services/<int:entry_id>",methods=["GET"])
 def get_all_services(entry_id):
-    
     a=Service(entry_id)
     a.initialize_services()
     serv=a.get_all_services()
@@ -362,6 +511,7 @@ def parse_service_response(providers):
 
     return all_services
 
+
 #Takes as parameter packages : A collection of package Ids, and services a collection of dictionaries
 def get_categories(services): 
     cat_data=dict()
@@ -378,12 +528,6 @@ def get_categories(services):
 
     return cat_data  
 
-@admn_blueprint.route("/getserv/<int:provider_id>")
-def get_serv(provider_id):
-    a=Service(str(provider_id))
-    services=a.get_all_services()
-    return services
-
 @admn_blueprint.route("/getcat/<int:provider_id>")
 def pass_categories(provider_id):
     all_categories=[]
@@ -396,6 +540,56 @@ def pass_categories(provider_id):
                 all_categories.append(service_category)
     return all_categories
 
+def groupServicesByCategory(objects):
+    objects.sort(key=lambda x: x['category'])
+    grouped_objects = {key: list(group) for key, group in groupby(objects, key=lambda x: x['category'])}
+    return grouped_objects
+
+@admn_blueprint.route("/getserv/<path:category>/<int:provider>")
+def get_services_(category,provider):
+    category=unquote(category)
+    a=Service(provider)
+    all_services=a.get_all_services()
+    categories=groupServicesByCategory(all_services)
+    return categories.get(category)
+
+@admn_blueprint.route("/trigger")
+def get_calls():
+    data=dict()
+    api_table=ApiTable()
+    package_table=Package()
+
+    data["calls"]=api_table.get_all()
+    data["packages"]=package_table.get_all_packages_()
+
+    return render_template("api_calls_table.html",data=data)
+
+@admn_blueprint.route("/getcall/<int:id>")
+def get_callId(id):
+    table=Order()
+    order_objects=table.display_schedules(id)
+    json_list = []
+    for order_object in order_objects:
+        order_dict = {
+            "order_id": order_object.order_id,
+            "user_id": order_object.user_id,
+            "package_id": order_object.package_id,
+            "service_id": order_object.service_id,
+            "link": order_object.link,
+            "comments": order_object.comments,
+            "quantity": order_object.quantity,
+            "rate": order_object.rate,
+            "interval": order_object.interval,
+            "call_id": order_object.call_id,
+            "order_status": order_object.order_status,
+            "execution_time": order_object.execution_time,
+            "start":order_object.order_start,
+            "provider_name":order_object.provider_name,
+            "jap_order_id":order_object.jap_order_id
+        }
+        json_list.append(order_dict)
+    return render_template("scheduled_orders.html",data=json_list)
+
 @admn_blueprint.route("/")
 def admnDashboard():    
     #for the packages
@@ -407,27 +601,14 @@ def admnDashboard():
         parsed_data["package_id"]=i[0]
         parsed_data["package_name"]=i[1]
         parsed_data["package_price"]=i[2]
-        parsed_data["package_rate"]=i[3]
-        parsed_data["package_provider"]=i[4]
+        parsed_data["package_provider"]=i[3]
         package_collection.append(parsed_data)
 
     #for the orders       
     o=Order()
-    orders=o.get_all_orders()
-    order_collection=[]
-    for i in orders:
-        item=dict()
-        item["order_id"]=i[0]
-        item["user_id"]=i[1]
-        item["package_id"]=i[2]
-        item["service_id"]=i[3]
-        item["link"]=i[4]
-        item["comments"]=i[5]
-        item["quantity"]=i[6]
-        item["rate"]=i[7]
-        item["interval"]=i[8]
-        item["order_status"]=i[9]
-        order_collection.append(item)
+    table=ApiTable()
+    orders=table.get_all()
+    order_collection=orders
 
     #for the providers
     providers=database.get_all_providers()

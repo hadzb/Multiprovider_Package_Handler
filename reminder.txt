@@ -1,4 +1,2 @@
 1. Search control for the package Creation form.
 2. Schema modifications for the package & Order entity: each service should include its own quantity.
-3. 
-

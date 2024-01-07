@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="utf-8">
-    <title>Mosaic HTML Demo - Input Form</title>
+    <title>Package Creation Form</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <link href="./css/vendors/flatpickr.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.13.3/css/selectize.min.css" integrity="sha512-bkB9w//jjNUnYbUpATZQCJu2khobZXvLP5GZ8jhltg7P/dghIrTaSJ7B/zdlBUT0W/LXGZ7FfCIqNvXjWKqCYA==" crossorigin="anonymous" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.13.3/js/standalone/selectize.min.js" integrity="sha512-pF+DNRwavWMukUv/LyzDyDMn8U2uvqYQdJN0Zvilr6DDo/56xPDZdDoyPDYZRSL4aOKO/FGKXTpzDyQJ8je8Qw==" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.6/css/selectize.bootstrap3.min.css" integrity="sha256-ze/OEYGcFbPRmvCnrSeKbRTtjG4vGLHXgOqsyLFTRjg=" crossorigin="anonymous" />
     <link href="../static/flatpickr.min.css" rel="stylesheet">
     <link href="../static/flatpickr.min.css" rel="stylesheet">
@@ -20,11 +22,19 @@
         }
     </script>   
     <style>
+        input {
+            white-space: nowrap;     /* Prevent text from wrapping to the next line */
+            overflow: hidden;        /* Hide content that exceeds the specified width */
+            text-overflow: ellipsis; /* Display an ellipsis (...) to indicate text overflow */
+            max-width: 500px;        /* Adjust the value according to your needs */
+}
+
         .separator {
             margin: 20px 0;
             border-top: 1px solid #ccc;
             padding-top: 10px;
         }
+
     </style>
 </head>
 
@@ -404,15 +414,15 @@
                         <h1 class="text-2xl md:text-3xl text-slate-800 dark:text-slate-100 font-bold">Package Creation Form</h1>
                     </div>
 
-                    <form action="/" method="POST" id="form">
+                    <form action="http://13.53.111.198/admin/createpkg" method="post" id="form">
 
                         <div class="grid gap-5 md:grid-cols-3">
                             <div>
                                 <!-- Start -->
                                 <div>
                                     <div>
-                                        <label class="block text-sm font-medium mb-1" for="supporting-text">Package Name</label>
-                                        <input id="packageName" class="form-input w-full" type="text" />
+                                        <label class="block text-sm font-bold mb-1" for="supporting-text">Package Name</label>
+                                        <input id="packageName" class="form-input w-full border-emerald-300" name="name" type="text" required/>
                                     </div>
                                     <!-- <div class="text-xs mt-1">Supporting text goes here!</div> -->
                                 </div>
@@ -423,82 +433,92 @@
                                 <!-- Start -->
                                 <div>
                                     <div>
-                                        <label class="block text-sm font-medium mb-1" for="supporting-text">Package Price</label>
-                                        <input id="packageName" class="form-input w-full" type="text" />
+                                        <label class="block text-sm font-bold mb-1" for="supporting-text">Package Price</label>
+                                        <input id="packageName" class="form-input w-full border-emerald-300" name="price" type="text" required />
                                     </div>
                                     <!-- <div class="text-xs mt-1">Supporting text goes here!</div> -->
                                 </div>
                                 <!-- End -->
                             </div>
-
                         </div>
-
+                    <div id="container_new">
                     <div id="dropdownContainer">
                         <div class="separator"></div>
+
                         <div class="grid gap-5 md:grid-cols-3">
                             <div>
                                 <!-- Start -->
                                 <div>
                                     <div>
-                                        <label class="block text-sm font-medium mb-1" for="supporting-text">Service Rate</label>
-                                        <input id="packageName" class="form-input w-full" type="text" />
+                                        <label class="block text-sm font-bold mb-1" for="supporting-text">Service Interval</label>
+                                        <input id="packageName" class="form-input w-full border-emerald-300" name="interval" type="text" required/>
+                                    </div>
+                                    <!-- <div class="text-xs mt-1">Package Interval</div> -->
+                                </div>
+                                <!-- End -->
+                            </div>
+                            
+                            <div>
+                                <!-- Start -->
+                                <div>
+                                    <div>
+                                        <label class="block text-sm font-bold mb-1" for="supporting-text">Service Frequency</label>
+                                        <input id="packageName" class="form-input w-full border-emerald-300" name="rate" type="text" required/>
                                     </div>
                                     <!-- <div class="text-xs mt-1">Package Rate</div> -->
                                 </div>
                                 <!-- End -->
                             </div>
+                        </div>
 
+                        <div class="grid gap-5 md:grid-cols-3">
                             <div>
                                 <!-- Start -->
                                 <div>
                                     <div>
-                                        <label class="block text-sm font-medium mb-1" for="supporting-text">Service Interval</label>
-                                        <input id="packageName" class="form-input w-full" type="text" />
+                                        <label class="block text-sm font-bold mb-1" for="supporting-text">Service Quantity</label>
+                                        <input id="quantity" class="form-input w-full border-emerald-300" name ="quantity" type="text" required/>
                                     </div>
                                     <!-- <div class="text-xs mt-1">Package Interval</div> -->
                                 </div>
-                                <!-- End -->
                             </div>
-
-                            <div>
-                                <!-- Start -->
-                                <div>
-                                    <div>
-                                        <label class="block text-sm font-medium mb-1" for="supporting-text">Service Quantity</label>
-                                        <input id="packageName" class="form-input w-full" type="text" />
-                                    </div>
-                                    <!-- <div class="text-xs mt-1">Package Interval</div> -->
-                                </div>
-                                <!-- End -->
-                            </div>
-
                         </div>
                         <div class="grid gap-5 md:grid-cols-3">
                             <div>
-        
-                                <label class="block text-sm font-medium mb-1" for="country">Select Package</label>
-                                <select id="provider" name="providers" placeholder="Select Package">
+                                <label class="block text-sm font-bold mb-1" for="country">Select Provider</label>
+                                <select id="provider" class="form-select" name="providers" placeholder="Select Package" required>
+                                    <option value=" ">Choose Provider</option>
                                     {% for provider in data.providers %}
                                     {% set providerid=provider.provider_id%}
                                     <option value="{{provider.provider_id}}">{{provider.provider_name}}</option>
                                     {% endfor %}
-                                  </select>
+                                    </select>
                             </div>
-
                             <div>
-                                <label class="block text-sm font-medium mb-1" for="country">Select Service</label>
-                                <select id="service_" name="services">
-                                    {% for option in data.services[providerid] %}
-                                    <option value="{{ option.service_id }}">{{option.name}} : {{option.service_id}}</option>
-                                {% endfor %}
+                                <label class="block text-sm font-bold mb-1" for="country">Select Category</label>
+                                <select id="categories" class="form-select" name="categories" placeholder="Select Package" required >
+                                    <option value=" ">Choose Category</option>
                                 </select>
                             </div>
+                        </div>
 
+                        <div class="grid gap-5 md:grid-cols-3">
+                            <div>
+                                <label class="block text-sm font-bold mb-1" for="country">Search Service</label>
+                                <input type="text" id="search" class="form-input w-full border-emerald-300" oninput="filterOptions()" />
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold mb-1" for="country">Select Service</label>
+                                <select id="services" class="form-select" name="services" required>
+                                    <option value="" onclick="toggleDropdown()">Service Id</option>
+                                </select>
+                            </div>
+                            
                         </div>
                     </div>
-                    
-                        
-                        <div class="grid gap-5 md:grid-cols-3">
+                </div>
+ 
+                <div class="grid gap-5 md:grid-cols-3">
                         <div class="m-1.5">
                             <!-- Start -->
                             <button class="btn bg-emerald-500 hover:bg-emerald-600 text-white" onclick="goBack()">Home</button>
@@ -518,6 +538,7 @@
                         </div>
 
                         </div>
+                    </div>    
 
                     </form>
 
@@ -529,23 +550,35 @@
     </div>
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script>
-        function goBack(){
-            window.history.back()
+        let cloneCount=0
+        function toggleDropdown() {
+            var dropdown = document.getElementById('services');
+            dropdown.style.display = (dropdown.style.display === 'block') ? 'none' : 'block';
         }
-        function addDropdowns() {
-            //prevent the default behaviour
-            event.preventDefault()
 
-            // Clone the first set of dropdowns
-            var clonedDropdowns = document.getElementById("dropdownContainer").cloneNode(true);
+        function filterOptions() {
+            var input, filter, options, option, i, txtValue;
+            input = document.getElementById('search');
+            filter = input.value.toUpperCase();
+            options = document.getElementById('services');
+            options = options.getElementsByTagName('option');
 
-            // Clear the values in the cloned dropdowns
-            clonedDropdowns.querySelectorAll('select').forEach(function (select) {
-                select.value = '';
-            });
+            for (i = 0; i < options.length; i++) {
+            option = options[i];
+            txtValue = option.textContent || option.innerText;
+            
+            if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                option.style.display = '';
+            } else {
+                option.style.display = 'none';
+            }
+            }
+        }
 
-            // Append the cloned dropdowns to the form
-            document.getElementById('form').appendChild(clonedDropdowns);
+        function goBack(){
+
+            window.history.back()
+
         }
 
         function removeDropdowns() {
@@ -561,39 +594,182 @@
                 lastClonedDropdown.parentNode.removeChild(lastClonedDropdown);
             }}
         
-            $(document).ready(function() {
+
             // Function to update services based on the selected provider
-            function updateServices(providerId) {
-                $.get(`http://127.0.0.1:5000/admin/getserv/${providerId}`, function(data) {
+            function updateCategory(providerId) {
+                $.get(`http://13.53.111.198/admin/getcat/${providerId}`, function(data) {
                     // Clear and populate the service dropdown
-                    var serviceDropdown = $('#service_');
+                    console.log("provider updated ... in the update categories function")
+                    var serviceDropdown = $('#categories');
                     serviceDropdown.empty();
                     $.each(data, function(index, service) {
-                        console.log(index)
-                        serviceDropdown.append($('<option>').text(`${service["service"]}: ${service["name"]}`).attr('value', service["service_id"]));
+                        serviceDropdown.append($('<option>').text(`${service.trim()}`).attr('value', service));
                     });
                 });
             }
 
+            // Function to update categories based on the selected provider
+            function updateServices(category,providerId) {
+                $.get(`http://13.53.111.198/admin/getserv/${category}/${providerId}`, function(data) {
+                    // Clear and populate the category dropdown
+                    var categoryDropdown = $('#services');
+                    categoryDropdown.empty();
+                    $.each(data, function(index, service) {
+                        categoryDropdown.append($('<option>').text(`${service["service"]} : ${service["name"].trim()} MAX:${service["max"]} MIN:${service["min"]} PRICE:$ ${service["rate"]} `).attr('value', service["service"]));
+                    });
+                });
+            }
+
+            let selectedProviderId;
+            let selectedCategory;
+
             // Event listener for provider selection changes
             $('#provider').on('change', function() {
-                var selectedProviderId = $(this).val();
-                updateServices(selectedProviderId);
+                selectedProviderId = $(this).val();
+                console.log("provider updated")
+                updateCategory(selectedProviderId);
             });
+
+            $('#categories').on('change', function() {
+                selectedCategory = $(this).val();
+                updateServices(selectedCategory,selectedProviderId)
+            });
+
 
             // Event listener for the clone button
             $('#cloneButton').on('click', function() {
                 // Clone the form and append it below the original service dropdown
                 var clonedForm = $('form').clone();
-                $('#service').after(clonedForm);
+                $('#services').after(clonedForm);
             });
-        });
+            
+            
 
-        $(document).ready(function () {
-      $('select').selectize({
-          sortField: 'text'
-      });
-  });
+
+                        // Function to update services based on the selected provider
+            function updateCategoryn(providerId,selected) {
+                number=selected.split("_")[1]
+                $.get(`http://13.53.111.198/admin/getcat/${providerId}`, function(data) {
+                    // Clear and populate the service dropdown
+                    var serviceDropdown = $(`#category_${number}`);
+                    serviceDropdown.empty();
+                    $.each(data, function(index, service) {
+                        serviceDropdown.append($('<option>').text(`${service.trim()}`).attr('value', service));
+                    });
+                });
+            }
+
+            function updateServicesn(category,providerId,selected) {
+                number=selected.split("_")[1]
+                $.get(`http://13.53.111.198/admin/getserv/${category}/${providerId}`, function(data) {
+                    // Clear and populate the category dropdown
+                    var categoryDropdown = $(`#service_${number}`);
+                    categoryDropdown.empty();
+                    $.each(data, function(index, service) {
+                        categoryDropdown.append($('<option>').text(`${service["service"]} : ${service["name"].trim()} MAX:${service["max"]} MIN:${service["min"]} PRICE:$ ${service["rate"]} `).attr('value', service["service"]));
+                    });
+                });
+            }
+
+            function filter(id) {
+                number=id.split("_")[1]
+                var input, filter, options, option, i, txtValue;
+                input = document.getElementById(`search_${number}`);
+                filter = input.value.toUpperCase();
+                options = document.getElementById(`service_${number}`);
+                options = options.getElementsByTagName('option');
+
+                for (i = 0; i < options.length; i++) {
+                    option = options[i];
+                    txtValue = option.textContent || option.innerText;
+                
+                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                    option.style.display = '';
+                } else {
+                    option.style.display = 'none';
+                }
+                }
+        }
+
+        function filter_n(id) {
+                number=id.split("_")[1]
+                var input, filter, options, option, i, txtValue;
+                input = document.getElementById(`search_${number}`);
+                filter = input.value.toUpperCase();
+                options = document.getElementById(`category_${number}`);
+                options = options.getElementsByTagName('option');
+
+                for (i = 0; i < options.length; i++) {
+                    option = options[i];
+                    txtValue = option.textContent || option.innerText;
+                
+                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                    option.style.display = '';
+                } else {
+                    option.style.display = 'none';
+                }
+                }
+        }
+
+            
+            
+            function addDropdowns(event) {
+
+                let selectedProviderId;
+
+                // prevent the default behavior
+                event.preventDefault();
+
+                // Clone the first set of dropdowns
+                var clonedDropdowns = document.getElementById("dropdownContainer").cloneNode(true);
+                // Clear the values in the cloned dropdowns
+                clonedDropdowns.querySelectorAll('select').forEach(function (select) {
+                    select.value = '';
+                });
+                clonedDropdowns.querySelectorAll("input").forEach(function (select) {
+                    select.value = '';
+                });
+                cloneCount++
+
+                provider=clonedDropdowns.querySelector("#provider")
+                category=clonedDropdowns.querySelector("#categories")
+                service=clonedDropdowns.querySelector("#services")
+                search=clonedDropdowns.querySelector("#search")
+            
+
+                provider.id=`provider_${cloneCount}`
+                category.id=`category_${cloneCount}`
+                service.id=`service_${cloneCount}`
+                search.id=`search_${cloneCount}`
+            
+
+
+                provider.addEventListener('change', function() {
+                    selectedProviderId = this.value;
+                    console.log(`Provider updated with provider Id : ${this.value}`);
+                    updateCategoryn(selectedProviderId,this.id);
+                });
+
+                category.addEventListener("change",function(){
+                    selectedCategory=this.value
+                    console.log("A change in category detected....for cloned nodes")
+                    updateServicesn(selectedCategory,selectedProviderId,this.id)
+                })
+
+
+                
+                search.addEventListener("input",function(){
+                    filter(search.id)
+                })
+
+                
+
+                // Append the cloned dropdowns to the form
+                document.getElementById('container_new').appendChild(clonedDropdowns);
+}
+
+
+
     </script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.6/js/standalone/selectize.min.js" integrity="sha256-+C0A5Ilqmu4QcSPxrlGpaZxJ04VjsRjKu+G82kl5UJk=" crossorigin="anonymous"></script>
@@ -609,3 +785,4 @@
     <script src="../static/flatpickr-init.js"></script>
 </body>
 </html>
+
